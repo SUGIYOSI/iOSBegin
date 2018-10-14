@@ -8,10 +8,10 @@
 
 import Foundation
 
+//本のデータを格納するクラス
 
 class BookData: NSObject, NSCoding {
     
-    //タイトル、作者、本の画像、本のレビューの格納
     var BookTitle: String?
     var Author: String?
     var BookViews:[String:String] = [:]
@@ -38,7 +38,7 @@ class BookData: NSObject, NSCoding {
     }
 }
 
-
+//Userデータを格納するクラス
 
 class User: NSObject, NSCoding {
     
@@ -68,4 +68,11 @@ class User: NSObject, NSCoding {
     }
 }
 
+//現在のユーザーデータと指定している本のデータを格納するシングルトン
 
+final class NowUser{
+    static let shared = NowUser()
+    var nowuser = User()
+    var nowbook = BookData()
+    private init() {}
+}

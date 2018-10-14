@@ -12,14 +12,13 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var nc: UINavigationController?
+    let tabbarController: TabBarController = TabBarController()
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        let vc: UIViewController = LoginViewController()
-        nc = UINavigationController(rootViewController: vc)
         self.window = UIWindow(frame: UIScreen.main.bounds)
-        self.window?.rootViewController = nc
+        //最初にTabbarController経由する
+        self.window?.rootViewController = tabbarController
         self.window?.makeKeyAndVisible()
         return true
     }
