@@ -1,45 +1,24 @@
-//
-//  BookViewController.swift
-//  Bookers
-//
-//  Created by 杉山佳史 on 2018/09/19.
-//  Copyright © 2018年 SUGIYOSI. All rights reserved.
-//
-
 import UIKit
 
 class BookViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    
-    //TableViewインスタンス
-    private var TableView: UITableView!
-    //BookData型の配列,Bookersを宣言
+    var tableView: UITableView!
     var Bookers = [BookData]()
-    //BookData型のObjectを宣言
-    var Books   = BookData()
+    var Book   = BookData()
     var users = [User]()
     var user  = User()
     var tapuser = User()
-    var ifID = String()
+    //Keyは本のレビュー,Valueはレビューを投稿した人のUserID。
     var StockKeys: [String] = Array()
     var StockValues: [String] = Array()
-    
-    let SafeView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1)
-        return view
-    }()
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
         user = NowUser.shared.nowuser
-        Books = NowUser.shared.nowbook
-        
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        
+        Book = NowUser.shared.nowbook
+        StockKeys = Array(Book.BookViews.keys)
+        StockValues = Array(Book.BookViews.values)
         //シリアライズ処理
         let userdefaults = UserDefaults.standard
         if let storedusers = userdefaults.object(forKey: "users") as? Data {
@@ -55,48 +34,30 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
         
-        StockKeys = Array(Books.BookViews.keys)
-        StockValues = Array(Books.BookViews.values)
-        
         //viewの大きさを取得
         let viewWidth = self.view.frame.size.width
         let viewHeight = self.view.frame.size.height
         let view8Width = self.view.frame.size.width / 8
         let view8Height = self.view.frame.size.height / 8
-//        let view16Width = self.view.frame.size.width / 16
-//        let view16Height = self.view.frame.size.height / 16
         let view22Height = self.view.frame.size.height / 22
         
         //Viewの中に２つのViewを宣言する
-        
         //viewその１（上画面）
         let view1: UIView = {
             let view1 = UIView()
             view1.frame = CGRect(x: 0, y: 0, width: viewWidth, height: viewHeight / 2)
             view1.backgroundColor = .white
             
-            let nextNavBar = UINavigationBar()
-            nextNavBar.isTranslucent = false
-            nextNavBar.barTintColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1) 
-            nextNavBar.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height, width: viewWidth, height: 44)
+            //NavigationBar
+            self.navigationItem.title = "本の紹介"
+            self.navigationController?.navigationBar.barTintColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1)
+            let leftBackButton = UIBarButtonItem(barButtonHiddenItem: .Back, target: self, action: #selector(leftBackButtonClick(sender:)))
+            self.navigationItem.leftBarButtonItem = leftBackButton
             
-            let nextNavItems = UINavigationItem()
-            nextNavItems.title = "本の紹介"
-            let rightNavBtn =  UIBarButtonItem()
-            nextNavItems.leftBarButtonItem = rightNavBtn
-            nextNavItems.rightBarButtonItem = rightNavBtn;
-            nextNavBar.pushItem(nextNavItems, animated: true)
-            view1.addSubview(nextNavBar)
-            
-            let leftNavBtn: UIBarButtonItem = UIBarButtonItem(barButtonHiddenItem: .Back, target: nil, action: #selector(leftBtnClicked(sender:)))
-            leftNavBtn.action = #selector(leftBtnClicked(sender:))
-            nextNavItems.leftBarButtonItem = leftNavBtn;
-            nextNavBar.pushItem(nextNavItems, animated: true)
-            view1.addSubview(nextNavBar)
-            
+            //UI部品
             let booktitle: UILabel = {
                 let label = UILabel()
-                label.text = Books.BookTitle
+                label.text = Book.BookTitle
                 if label.text == nil {
                     label.text = "入力してください"
                     label.shadowColor = UIColor.gray
@@ -108,7 +69,7 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
             
             let bookauthor: UILabel = {
                 let label = UILabel()
-                label.text = Books.Author
+                label.text = Book.Author
                 if label.text == nil {
                     label.text = "入力してください"
                     label.shadowColor = UIColor.black
@@ -143,12 +104,7 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
                 return image
             }()
             
-            if Books.BookImage == nil {
-                viewImage.image = UIImage(named: "NoImage")
-            }else{
-                let IMAGE: UIImage? = UIImage(data: Books.BookImage! as Data)
-                viewImage.image = IMAGE
-            }
+            viewImage.image  = UIImage(data: Book.BookImage! as Data)
             
             view1.addSubview(booktitle)
             view1.addSubview(bookauthor)
@@ -189,87 +145,69 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
             return view1
         }()
         
-        self.view.addSubview(view1)
-        
         //viewその２（下画面）
         let view2: UIView = {
             let view2 = UIView()
             view2.frame = CGRect(x: 0, y: viewHeight / 2, width: viewWidth, height: viewHeight / 2)
             let view2height = view2.frame.size.height
-            view2.backgroundColor = .white
-            
-            
-            TableView = UITableView()
-            self.TableView.rowHeight = 90
-            //デリゲートの設定
-            TableView.delegate = self
-            TableView.dataSource = self
-            //テーブルビューの大きさの指定
-            TableView.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height, width: viewWidth, height: view2height )
-            //テーブルビューの設置
-            TableView.register(BookCustomCell.self, forCellReuseIdentifier: "BookCustomCell")
-            
-            
-            view2.addSubview(TableView)
-            
+        
+            //TableView
+            tableView = UITableView()
+            tableView.rowHeight = 90
+            tableView.delegate = self
+            tableView.dataSource = self
+            tableView.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height, width: viewWidth, height: view2height )
+            tableView.register(BookCustomCell.self, forCellReuseIdentifier: "BookCustomCell")
+            view2.addSubview(tableView)
             return view2
         }()
         
+        self.view.addSubview(view1)
         self.view.addSubview(view2)
-        self.view.addSubview(SafeView)
-        
-        SafeView.translatesAutoresizingMaskIntoConstraints = false
-        SafeView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        SafeView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        SafeView.bottomAnchor.constraint(equalTo: view.topAnchor, constant: UIApplication.shared.statusBarFrame.height).isActive = true
     }
     
-    //MARK: - ナビゲーションバーの左のボタンが押されたら呼ばれるメソッド
-    @objc internal func leftBtnClicked(sender: UIButton){
-        //Search画面に戻る
-        NowUser.shared.nowbook = Books
+    @objc func leftBackButtonClick(sender: UIButton){
+        NowUser.shared.nowbook = Book
         navigationController?.popViewController(animated: true)
     }
     
-    
-    //テーブルビューのデリゲードメソッドたち
-    //MARK: テーブルビューのセルの数を設定する
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Books.BookViews.keys.count
+        return Book.BookViews.keys.count
     }
     
-    //MARK: テーブルビューのセルの中身を設定する
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BookCustomCell",for: indexPath as IndexPath) as! BookCustomCell
-        
-        cell.reviewLabel.text = StockKeys[indexPath.row]
-        
-        for use in users {
-            if use.UserID == StockValues[indexPath.row] {
-                if use.UserImage == nil{
-                cell.userimage.image = UIImage(named: "NoImage")?.resize(size: CGSize(width: 50, height: 50))
-                } else {
-                cell.userimage.image = UIImage(data: use.UserImage! as Data)?.resize(size: CGSize(width: 50, height: 50))
-                }
-            }
-        }
-    
+        cell.setCell(indexPath: indexPath.row, users: users, StockValues: StockValues ,StockKeys:  StockKeys)
         return cell
     }
     
-    //MARK: テーブルビューのセルを削除する処理
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //投稿したユーザーを探し,tapUserに入れる。
+        for searchUser in users{
+            if searchUser.UserID == StockValues[indexPath.row] {
+                tapuser = searchUser
+            }
+        }
+
+        let vc = PearsonViewController()
+        vc.tapUser = tapuser
+        NowUser.shared.nowbook = Book
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
     func tableView(_ tableview: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath){
         //削除可能かどうか
         if editingStyle == UITableViewCellEditingStyle.delete {
             
-            let key: String = StockKeys[indexPath.row]
+            //それぞれ削除する
+            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
             StockKeys.remove(at: indexPath.row)
-            Books.BookViews.removeValue(forKey: key)
-            TableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
+            Book.BookViews.removeValue(forKey: StockKeys[indexPath.row])
             
+            //削除したところをBookersに反映させる
             for book in Bookers {
-                if book.BookTitle == Books.BookTitle {
-                    book.BookViews = Books.BookViews
+                if book.BookTitle == Book.BookTitle {
+                    book.BookViews = Book.BookViews
                 }
             }
             //シリアライズ処理（Bookers）
@@ -280,52 +218,10 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        for book in Bookers {
-            for (key,value) in book.BookViews{
-                if key ==  StockKeys[indexPath.row]{
-                    ifID = value
-                }
-            }
-        }
-        
-        for USE in users{
-            if USE.UserID == ifID {
-                tapuser = USE
-            }
-        }
-        
-        //上の処理で持ってきた、BookData型のBookaを次の画面へ持っていく
-        let vc = PearsonViewController()
-        vc.tapuser = tapuser
-        NowUser.shared.nowbook = Books
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
 }
-
-
-
-
-extension UIBarButtonItem {
-    enum HiddenItem: Int {
-        case Arrow = 100
-        case Back = 101
-        case Forward = 102
-        case Up = 103
-        case Down = 104
-    }
-    
-    convenience init(barButtonHiddenItem: HiddenItem, target: AnyObject?, action: Selector?) {
-        let systemItem = UIBarButtonSystemItem(rawValue: barButtonHiddenItem.rawValue)
-        self.init(barButtonSystemItem: systemItem!, target: target, action: action)
-    }
-}
-
 
 class BookCustomCell: UITableViewCell {
     
@@ -345,7 +241,6 @@ class BookCustomCell: UITableViewCell {
         return image
     }()
     
-    // よくわからんけど、必要
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -355,22 +250,17 @@ class BookCustomCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        
-        // contentView.frame = UIEdgeInsetsInsetRect(contentView.frame, UIEdgeInsetsMake(40, 40, 40, 40))
         let viewHeight10 = self.contentView.frame.height / 10
         let viewWidth22 = self.contentView.frame.width / 22
-        // とりあえず、labelを作成してcontentViewにadd
         
         self.contentView.addSubview(reviewLabel)
         self.contentView.addSubview(userimage)
-        
         
         reviewLabel.translatesAutoresizingMaskIntoConstraints = false
         reviewLabel.topAnchor.constraint(equalTo: contentView.topAnchor,constant: viewHeight10 * 1).isActive = true
         reviewLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: viewWidth22 * 1).isActive = true
         reviewLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor ,constant: -viewWidth22 * 10).isActive = true
         reviewLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -viewHeight10 * 1).isActive = true
-       // reviewLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         userimage.translatesAutoresizingMaskIntoConstraints = false
         userimage.topAnchor.constraint(equalTo:contentView.topAnchor, constant: viewHeight10 * 4).isActive = true
@@ -378,12 +268,29 @@ class BookCustomCell: UITableViewCell {
         userimage.widthAnchor.constraint(equalToConstant: viewWidth22 * 6).isActive = true
         userimage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -viewHeight10 * 4).isActive = true
         
-     
-        
-        
+    }
+    
+    func setCell(indexPath: Int, users: [User], StockValues: [String], StockKeys: [String]){
+        for use in users {
+            if use.UserID == StockValues[indexPath] {
+                userimage.image = UIImage(data: use.UserImage! as Data)?.resize(size: CGSize(width: 50, height: 50))
+            }
+        }
+        reviewLabel.text = StockKeys[indexPath]
     }
 }
 
-
-
-
+extension UIBarButtonItem {
+    enum HiddenItem: Int {
+        case Arrow = 100
+        case Back = 101
+        case Forward = 102
+        case Up = 103
+        case Down = 104
+    }
+    
+    convenience init(barButtonHiddenItem: HiddenItem, target: AnyObject?, action: Selector?) {
+        let systemItem = UIBarButtonSystemItem(rawValue: barButtonHiddenItem.rawValue)
+        self.init(barButtonSystemItem: systemItem!, target: target, action: action)
+    }
+}

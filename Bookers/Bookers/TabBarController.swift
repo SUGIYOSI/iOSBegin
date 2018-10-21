@@ -1,11 +1,3 @@
-//
-//  TabBarController.swift
-//  Bookers
-//
-//  Created by 杉山佳史 on 2018/09/26.
-//  Copyright © 2018年 SUGIYOSI. All rights reserved.
-//
-
 import UIKit
 
 class TabBarController: UITabBarController{
@@ -55,11 +47,7 @@ class TabBarController: UITabBarController{
             let nc = UINavigationController(rootViewController: tabVC)
             myTabs.append(nc)
         }
-
-        
-        // 配列をTabにセットします。
         self.setViewControllers(myTabs, animated: false)
-        
     }
     
     override func didReceiveMemoryWarning() {

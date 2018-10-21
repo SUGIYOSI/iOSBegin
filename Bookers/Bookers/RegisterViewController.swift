@@ -1,11 +1,3 @@
-//
-//  RegisterViewController.swift
-//  Bookers
-//
-//  Created by 杉山佳史 on 2018/09/19.
-//  Copyright © 2018年 SUGIYOSI. All rights reserved.
-//
-
 import UIKit
 
 class RegisterViewController: UIViewController , UITextFieldDelegate{
@@ -15,38 +7,38 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
     
     
     let Email: UITextField = {
-        let textfield = UITextField()
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        textfield.layer.cornerRadius = 10
-        textfield.layer.masksToBounds = true
-        return textfield
+        let textField = UITextField()
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     
     let UserID: UITextField = {
-        let textfield = UITextField()
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        textfield.layer.cornerRadius = 10
-        textfield.layer.masksToBounds = true
-        return textfield
+        let textField = UITextField()
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     let Password: UITextField = {
-        let textfield = UITextField()
-        textfield.isSecureTextEntry = true
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        textfield.layer.cornerRadius = 10
-        textfield.layer.masksToBounds = true
-        return textfield
+        let textField = UITextField()
+        textField.isSecureTextEntry = true
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     let rePassword: UITextField = {
-        let textfield = UITextField()
-        textfield.isSecureTextEntry = true
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        textfield.layer.cornerRadius = 10
-        textfield.layer.masksToBounds = true
-        return textfield
+        let textField = UITextField()
+        textField.isSecureTextEntry = true
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     
@@ -114,11 +106,9 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1) 
         let view22Width = self.view.frame.size.width / 22
         let view32Height = self.view.frame.size.height / 32
-        
         //シリアライズ処理
         let userDefaults = UserDefaults.standard
         if let storedusers = userDefaults.object(forKey: "users") as? Data {
@@ -230,8 +220,7 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
         navigationController?.popViewController(animated: true)
     }
     
-    
-    //登録完了し、TabBarControllerに行く
+    //登録完了
     @objc internal func Register(_ sender: UIButton){
         
         if(UserID.text == "" || Password.text == "" || rePassword.text == "" || Email.text == ""){
@@ -239,16 +228,17 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
             return
         }
         
-        //パスワード一致確認
         if(Password.text != rePassword.text)
         {
             displayMyAlertMessage(userMessage: "パスワードが一致していません。")
             return
         }
         
+        //各データを代入,画像はデフォルトのやつを挿入
         user.Email = Email.text
         user.UserID = UserID.text
         user.Password = Password.text
+        user.UserImage = UIImagePNGRepresentation(UIImage(named: "NoImage")!)! as NSData
         users.insert(user, at: 0)
         
         //デシリアライズ
@@ -258,28 +248,18 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
         userDefaults.synchronize()
         
         NowUser.shared.nowuser = user
-        
-        dismiss(animated: true) {
-            // 閉じた時に行いたい処理
-        }
+        dismiss(animated: true)
     }
     
-    
-    
+    //アラートメッセージ
     func displayMyAlertMessage(userMessage: String){
-        
         let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil)
         myAlert.addAction(okAction);
         self.present(myAlert,animated:true, completion:nil)
     }
     
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
-    
-    
-    
 }

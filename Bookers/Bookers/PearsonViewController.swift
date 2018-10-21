@@ -1,41 +1,20 @@
-//
-//  PearsonViewController.swift
-//  Bookers
-//
-//  Created by 杉山佳史 on 2018/09/20.
-//  Copyright © 2018年 SUGIYOSI. All rights reserved.
-//
-
 import UIKit
 
 class PearsonViewController: UIViewController , UITableViewDelegate ,UITableViewDataSource {
 
     var Bookers = [BookData]()
     var myBookers = [BookData]()
-    var savebook = BookData()
     var Book = BookData()
     var user = User()
-    var tapuser = User()
-    var IMAGE = UIImage()
-    private var tableview: UITableView!
-    
-    let SafeView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1) 
-        return view
-    }()
-    
-    
+    var tapUser = User()
+    var tapUserImage = UIImage()
+    var tableview: UITableView!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        
         let viewWidth = self.view.frame.size.width
         let viewHeight = self.view.frame.size.height
-        
-        user = NowUser.shared.nowuser
-        Book = NowUser.shared.nowbook
         
         let userDefaults = UserDefaults.standard
         if let storedBookers = userDefaults.object(forKey: "Bookers") as? Data {
@@ -44,139 +23,67 @@ class PearsonViewController: UIViewController , UITableViewDelegate ,UITableView
             }
         }
         
+        user = NowUser.shared.nowuser
+        Book = NowUser.shared.nowbook
+        //Bookersの中から、そのユーザーの投稿したBookだけを取り出し、myBookrsに入れる
         for book in Bookers {
-            for (key,value) in book.BookViews{
-                if value == tapuser.UserID{
-                    savebook = book
-                    savebook.BookViews.removeAll()
-                    savebook.BookViews.updateValue(value, forKey: key)
+            for (_,value) in book.BookViews{
+                if value == tapUser.UserID{
                     myBookers.append(book)
                 }
             }
         }
         
-        //テーブルビューの初期化
+        //NavigationBar
+        let rightTapUserImageView: UIImageView = {
+            tapUserImage = (UIImage(data: tapUser.UserImage! as Data)?.resize(size: CGSize(width: 50, height: 50)).withRenderingMode(UIImageRenderingMode.alwaysOriginal))!
+         
+            let imageView = UIImageView(image: tapUserImage)
+            imageView.layer.cornerRadius = 6
+            imageView.layer.masksToBounds = true
+            return imageView
+        }()
+        
+        self.title = tapUser.UserID
+        self.navigationController?.navigationBar.barTintColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1)
+        let rightUserImageButton = UIBarButtonItem(customView: rightTapUserImageView)
+        let leftBackButton = UIBarButtonItem(barButtonHiddenItem: .Back, target: self, action: #selector(leftBackButtonClick(sender:)))
+        self.navigationItem.leftBarButtonItem = leftBackButton
+        self.navigationItem.rightBarButtonItem = rightUserImageButton
+        
+        //TableView
         tableview = UITableView()
-        //デリゲートの設定
         tableview.delegate = self
         tableview.dataSource = self
         tableview.contentOffset = CGPoint(x: 0,y :44)
         tableview.rowHeight = 100
-        //ナビゲーションバーの設定
-        let myNavBar = UINavigationBar()
-        //大きさの指定
-        myNavBar.isTranslucent = false
-        myNavBar.barTintColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1)
-        myNavBar.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height, width: viewWidth, height: 44)
-        
-        let myNavItems = UINavigationItem()
-        myNavItems.title = tapuser.UserID
-        
-        if tapuser.UserImage == nil {
-            IMAGE = UIImage(named: "NoImage")!.resize(size: CGSize(width: 50, height: 50)).withRenderingMode(UIImageRenderingMode.alwaysOriginal)
-        }else{
-            IMAGE = (UIImage(data: tapuser.UserImage! as Data)?.resize(size: CGSize(width: 50, height: 50)).withRenderingMode(UIImageRenderingMode.alwaysOriginal))!
-        }
-        
-        let button = UIButton(type: .system)
-        button.semanticContentAttribute = .forceRightToLeft
-        button.setImage(IMAGE ,  for: .normal)
-        button.layer.cornerRadius = 6
-        button.layer.masksToBounds = true
-        let rightNavBtn = UIBarButtonItem(customView: button)
-        myNavItems.leftBarButtonItem = rightNavBtn
-        myNavItems.rightBarButtonItem = rightNavBtn;
-        myNavBar.pushItem(myNavItems, animated: true)
-        //ナビゲーションバーをviewに追加
-        self.view.addSubview(myNavBar)
-        
-        let leftNavBtn = UIBarButtonItem(barButtonHiddenItem: .Back, target: nil, action: #selector(leftBarBtnClicked(sender:)))
-        leftNavBtn.action = #selector(leftBarBtnClicked(sender:))
-        myNavItems.leftBarButtonItem = leftNavBtn;
-        myNavBar.pushItem(myNavItems, animated: true)
-        //ナビゲーションバーをviewに追加
-        self.view.addSubview(myNavBar)
-        
-        //テーブルビューの大きさの指定
-        tableview.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height + myNavBar.frame.height, width: viewWidth, height: viewHeight - UIApplication.shared.statusBarFrame.height - myNavBar.frame.height)
+        tableview.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height + (navigationController?.navigationBar.frame.height)!, width: viewWidth, height: viewHeight - UIApplication.shared.statusBarFrame.height - (navigationController?.navigationBar.frame.height)!)
         tableview.register(PearsonCustomCell.self, forCellReuseIdentifier: "PearsonCustomCell")
         self.view.addSubview(tableview)
         
-        self.view.addSubview(SafeView)
-        SafeView.translatesAutoresizingMaskIntoConstraints = false
-        SafeView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        SafeView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        SafeView.bottomAnchor.constraint(equalTo: view.topAnchor, constant: UIApplication.shared.statusBarFrame.height).isActive = true
     }
     
-    @objc internal func leftBarBtnClicked(sender: UIButton){
+    @objc internal func leftBackButtonClick(sender: UIButton){
         NowUser.shared.nowbook = Book
         navigationController?.popViewController(animated: true)
     }
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //テーブルビューのセルの数はSearchResult配列の数とした
         return myBookers.count
     }
     
-    //MARK: テーブルビューのセルの中身を設定する
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //SearchResult配列の中身をテキストにして登録した
-        
     
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PearsonCustomCell",for: indexPath as IndexPath) as! PearsonCustomCell
-        var KEY: String = String()
-        var IMAGE: UIImage?
-        var TITLE: String = String()
-        
-        for(key,value) in myBookers[indexPath.row].BookViews {
-            if value == tapuser.UserID {
-                KEY = key
-                if myBookers[indexPath.row].BookImage != nil{
-                    IMAGE = UIImage(data: myBookers[indexPath.row].BookImage! as Data)
-                }
-                TITLE = myBookers[indexPath.row].BookTitle!
-            }
-        }
-        
-        cell.reviewLabel.text = KEY
-        
-        if IMAGE != nil{
-            cell.bookimage.image = IMAGE?.resize(size: CGSize(width: 50, height: 50))
-        }else{
-            cell.bookimage.image = UIImage(named: "NoImage")?.resize(size: CGSize(width: 50, height: 50))
-        }
-        
-        cell.titleLabel.text = TITLE
-        cell.layoutIfNeeded()
+        cell.setCell(indexPath: indexPath.row, myBookers: myBookers, tapUser:  tapUser)
         return cell
     }
 
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
-    
 }
-
-extension UIImage {
-    
-    func resize(size: CGSize) -> UIImage {
-        let widthRatio = size.width / self.size.width
-        let heightRatio = size.height / self.size.height
-        let ratio = (widthRatio < heightRatio) ? widthRatio : heightRatio
-        let resizedSize = CGSize(width: (self.size.width * ratio), height: (self.size.height * ratio))
-        // 画質を落とさないように以下を修正
-        UIGraphicsBeginImageContextWithOptions(resizedSize, false, 0.0)
-        draw(in: CGRect(x: 0, y: 0, width: resizedSize.width, height: resizedSize.height))
-        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return resizedImage!
-}
-}
-
 
 class PearsonCustomCell: UITableViewCell {
     
@@ -205,8 +112,6 @@ class PearsonCustomCell: UITableViewCell {
         return Label
     }()
     
-    
-    // よくわからんけど、必要
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -216,11 +121,8 @@ class PearsonCustomCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        
-        // contentView.frame = UIEdgeInsetsInsetRect(contentView.frame, UIEdgeInsetsMake(40, 40, 40, 40))
         let viewHeight10 = self.contentView.frame.height / 10
         let viewWidth22 = self.contentView.frame.width / 22
-        // とりあえず、labelを作成してcontentViewにadd
         
         self.contentView.addSubview(reviewLabel)
         self.contentView.addSubview(bookimage)
@@ -231,7 +133,6 @@ class PearsonCustomCell: UITableViewCell {
         bookimage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: viewWidth22 * 2).isActive = true
         bookimage.widthAnchor.constraint(equalToConstant: viewWidth22 * 8).isActive = true
         bookimage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -viewHeight10 * 2).isActive = true
-
         
         reviewLabel.translatesAutoresizingMaskIntoConstraints = false
         reviewLabel.topAnchor.constraint(equalTo:bookimage.topAnchor).isActive = true
@@ -244,14 +145,29 @@ class PearsonCustomCell: UITableViewCell {
         titleLabel.leadingAnchor.constraint(equalTo: bookimage.trailingAnchor,constant: viewWidth22 * 3.5).isActive = true
         titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -viewWidth22 * 3.5).isActive = true
         titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,constant: -viewHeight10 * 2).isActive = true
-        
-        
+    }
+    func setCell(indexPath: Int, myBookers: [BookData], tapUser: User){
+        for(key,value) in myBookers[indexPath].BookViews {
+            if value == tapUser.UserID {
+                reviewLabel.text = key
+                bookimage.image = UIImage(data: myBookers[indexPath].BookImage! as Data)
+                titleLabel.text = myBookers[indexPath].BookTitle!
+            }
+        }
     }
 }
 
-
-
-
-
-
-
+extension UIImage {
+    
+    func resize(size: CGSize) -> UIImage {
+        let widthRatio = size.width / self.size.width
+        let heightRatio = size.height / self.size.height
+        let ratio = (widthRatio < heightRatio) ? widthRatio : heightRatio
+        let resizedSize = CGSize(width: (self.size.width * ratio), height: (self.size.height * ratio))
+        UIGraphicsBeginImageContextWithOptions(resizedSize, false, 0.0)
+        draw(in: CGRect(x: 0, y: 0, width: resizedSize.width, height: resizedSize.height))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return resizedImage!
+    }
+}

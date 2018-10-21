@@ -1,11 +1,3 @@
-//
-//  SettingViewController.swift
-//  Bookers
-//
-//  Created by 杉山佳史 on 2018/09/20.
-//  Copyright © 2018年 SUGIYOSI. All rights reserved.
-//
-
 import UIKit
 
 class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -14,41 +6,39 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
     var user  = User()
     
     let Email: UITextField = {
-        let textfield = UITextField()
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        textfield.layer.cornerRadius = 10
-        textfield.layer.masksToBounds = true
-        return textfield
+        let textField = UITextField()
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     let UserID: UITextField = {
-        let textfield = UITextField()
-        textfield.backgroundColor = UIColor(red: 158/255, green: 148/255, blue: 247/255, alpha: 1)
-        textfield.layer.cornerRadius = 10
-        textfield.layer.masksToBounds = true
-        textfield.isEnabled = false
-        return textfield
+        let textField = UITextField()
+        textField.backgroundColor = UIColor(red: 158/255, green: 148/255, blue: 247/255, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        textField.isEnabled = false
+        return textField
     }()
     
     let Password: UITextField = {
-        let textfield = UITextField()
-        textfield.isSecureTextEntry = true
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        textfield.layer.cornerRadius = 10
-        textfield.layer.masksToBounds = true
-        return textfield
+        let textField = UITextField()
+        textField.isSecureTextEntry = true
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     let rePassword: UITextField = {
-        let textfield = UITextField()
-        textfield.isSecureTextEntry = true
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        textfield.layer.cornerRadius = 10
-        textfield.layer.masksToBounds = true
-        return textfield
+        let textField = UITextField()
+        textField.isSecureTextEntry = true
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
-    
-    
     
     let EmailLabel: UILabel = {
         let label = UILabel()
@@ -92,7 +82,7 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
         button.layer.shadowRadius = 5
         button.layer.shadowColor = UIColor.black.cgColor
         button.setTitle("更新", for: UIControlState.normal)
-        button.addTarget(self, action: #selector(reload(_:)), for: UIControlEvents.touchUpInside)
+        button.addTarget(self, action: #selector(updateUser(_:)), for: UIControlEvents.touchUpInside)
         return button
     }()
     
@@ -118,7 +108,6 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 7, height: 7)
         button.setTitle("Logout", for: UIControlState.normal)
-
         button.titleLabel?.font = UIFont.systemFont(ofSize: 13)
         button.addTarget(self, action: #selector(logout(_:)), for: UIControlEvents.touchUpInside)
         return button
@@ -134,6 +123,7 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
     
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         let userDefaults = UserDefaults.standard
         if let storedusers = userDefaults.object(forKey: "users") as? Data {
             if let unarchiveusers = NSKeyedUnarchiver.unarchiveObject(with: storedusers) as? [User] {
@@ -141,59 +131,27 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
             }
         }
         user = NowUser.shared.nowuser
-        reloadView()
+        setView()
         view.setNeedsLayout()
-        super.viewWillAppear(animated)
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1) 
         navigationController?.setNavigationBarHidden(true, animated: false)
+        view.backgroundColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1) 
         let view22Width = self.view.frame.size.width / 22
         let view32Height = self.view.frame.size.height / 32
-
         
-        
-        Password.delegate = self
-        Email.delegate = self
-        rePassword.delegate = self
-        
-        Password.placeholder = "Passwordを入力"
-        Email.placeholder = "Emailを入力"
-        rePassword.placeholder = "Passwordを再入再力"
-        
-        Password.clearButtonMode = .always
-        Email.clearButtonMode = .always
-        rePassword.clearButtonMode = .always
-        
-        Email.text = user.Email
-        UserID.text = user.UserID
-        Password.text = user.Password
-        rePassword.text = user.Password
-        
-        if user.UserImage == nil {
-            importImage.image = UIImage(named: "NoImage")
-        }else{
-            let IMAGE: UIImage? = UIImage(data: user.UserImage! as Data)
-            importImage.image = IMAGE
-        }
-        
-        view.addSubview(UserID)
+        setView()
+       
         view.addSubview(UserIDLabel)
         view.addSubview(UserLabel)
-        view.addSubview(Password)
         view.addSubview(PasswordLabel)
-        view.addSubview(rePassword)
         view.addSubview(rePasswordLabel)
-        view.addSubview(Email)
         view.addSubview(EmailLabel)
         view.addSubview(RegisterButton)
         view.addSubview(reloadButton)
-        view.addSubview(importImage)
         view.addSubview(logoutButton)
-        
         
         //Auto Layout
         UserLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -277,33 +235,23 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
     }
     
     
-    @objc func reloadView(){
+    func setView(){
         Password.delegate = self
         Email.delegate = self
         rePassword.delegate = self
-        
         Password.placeholder = "Passwordを入力"
         Email.placeholder = "Emailを入力"
         rePassword.placeholder = "Passwordを再入再力"
-        
         Password.clearButtonMode = .always
         Email.clearButtonMode = .always
         rePassword.clearButtonMode = .always
-        
         user = NowUser.shared.nowuser
-        
         Email.text = user.Email
         UserID.text = user.UserID
         Password.text = user.Password
         rePassword.text = user.Password
-        
-        if user.UserImage == nil {
-            importImage.image = UIImage(named: "NoImage")
-        }else{
-            let IMAGE: UIImage? = UIImage(data: user.UserImage! as Data)
-            importImage.image = IMAGE
-        }
-        
+        importImage.image = UIImage(data: user.UserImage! as Data)
+    
         view.addSubview(UserID)
         view.addSubview(Password)
         view.addSubview(rePassword)
@@ -311,41 +259,32 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
         view.addSubview(importImage)
     }
     
-    @objc func reload(_ sender: UIButton){
-        
+    @objc func updateUser(_ sender: UIButton){
         if(Password.text == "" || rePassword.text == "" || Email.text == ""){
-            //アラートメッセージ
             displayMyAlertMessage(userMessage: "全てのフォームに入力してください。")
             return
         }
-        
-        if(Password.text != rePassword.text)
-        {
+        if(Password.text != rePassword.text){
             displayMyAlertMessage(userMessage: "パスワードが一致していません。")
             return
         }
         
         for use in users {
             if use.UserID == user.UserID{
-                use.Email = Email.text
-                use.Password = Password.text
+                use.Email     = Email.text
+                use.Password  = Password.text
                 use.UserImage = user.UserImage
+                user = use
             }
         }
         
-        user.Email = Email.text
-        user.Password = Password.text
-
         NowUser.shared.nowuser = user
         
         let data: Data = NSKeyedArchiver.archivedData(withRootObject: users)
         let userDefaults = UserDefaults.standard
         userDefaults.set(data, forKey: "users")
         userDefaults.synchronize()
-    
         tabBarController?.selectedIndex = 0
-       //present(TabBarController(), animated: true, completion: nil)
-        
     }
     
     
@@ -380,7 +319,6 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
         tabBarController?.selectedIndex = 0
     }
     
-    
     func displayMyAlertMessage(userMessage: String){
         let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil)
@@ -388,10 +326,8 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
         self.present(myAlert,animated:true, completion:nil)
     }
     
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
         
     

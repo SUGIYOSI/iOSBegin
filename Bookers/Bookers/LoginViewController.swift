@@ -1,11 +1,3 @@
-//
-//  LoginViewController.swift
-//  Bookers
-//
-//  Created by 杉山佳史 on 2018/09/19.
-//  Copyright © 2018年 SUGIYOSI. All rights reserved.
-//
-
 import UIKit
 
 
@@ -13,25 +5,23 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
     
     var users = [User()]
     var user  = User()
-    
 
-    
     let UserID: UITextField = {
-        let textfield = UITextField()
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        textfield.borderStyle = .none
-        textfield.layer.cornerRadius = 10
-        textfield.layer.masksToBounds = true
-        return textfield
+        let textField = UITextField()
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.borderStyle = .none
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     let Password: UITextField = {
-        let textfield = UITextField()
-        textfield.isSecureTextEntry = true
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        textfield.layer.cornerRadius = 10
-        textfield.layer.masksToBounds = true
-        return textfield
+        let textField = UITextField()
+        textField.isSecureTextEntry = true
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     let LoginLabel: UILabel = {
@@ -48,16 +38,11 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
         return label
     }()
     
-    
     let PasswordLabel: UILabel = {
         let label = UILabel()
         label.text = "Password"
         return label
     }()
-    
-    
-    
-    //UIColor(red: 103/255, green: 215/255, blue: 220/255, alpha: 1)
     
     let LoginButton: UIButton = {
         let button = UIButton()
@@ -85,9 +70,6 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
         return button
     }()
     
-    
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1) 
@@ -96,7 +78,6 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
         let view22Width = self.view.frame.size.width / 22
         let view32Height = self.view.frame.size.height / 32
     
-        
         let userDefaults = UserDefaults.standard
         if let storedusers = userDefaults.object(forKey: "users") as? Data {
             if let unarchiveusers = NSKeyedUnarchiver.unarchiveObject(with: storedusers) as? [User] {
@@ -104,16 +85,13 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
             }
         }
         
-        
         UserID.delegate = self
         Password.delegate = self
         UserID.placeholder = "UserIDを入力"
         Password.placeholder = "Passwordを入力"
-        
         UserID.clearButtonMode = .always
         Password.clearButtonMode = .always
         
-
         view.addSubview(UserID)
         view.addSubview(UserIDLabel)
         view.addSubview(LoginLabel)
@@ -159,19 +137,14 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
         LoginButton.widthAnchor.constraint(equalToConstant: view22Width * 9).isActive = true
         LoginButton.heightAnchor.constraint(equalToConstant: view32Height * 2).isActive = true
         
-        
         RegisterButton.translatesAutoresizingMaskIntoConstraints = false
         RegisterButton.topAnchor.constraint(equalTo: LoginButton.bottomAnchor, constant: view32Height * 3).isActive = true
         RegisterButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         RegisterButton.widthAnchor.constraint(equalToConstant: view22Width * 5).isActive = true
         RegisterButton.heightAnchor.constraint(equalToConstant: view32Height * 1.5).isActive = true
-        
-        
     }
     
-    
-    @objc internal func LoginEvent(_ sender: UIButton){
-        
+    @objc func LoginEvent(_ sender: UIButton){
         //ログインできるかどうか調べる
         for use in users {
             if use.UserID == UserID.text{
@@ -180,37 +153,30 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
                 }
             }
         }
-        
+        //ログインできなかった場合
         if user.UserID == nil{
             displayMyAlertMessage(userMessage: "IDかパスワードが一致していません。")
             return
         }
-        
+        //ユーザー情報をシングルトンに保存してホーム画面に戻る
         NowUser.shared.nowuser = user
-        
         dismiss(animated: true)
-        
     }
     
- 
-    
+    //登録画面へ
     @objc internal func RegisterEvent(_ sender: UIButton){
         navigationController?.pushViewController(RegisterViewController(), animated: true)
     }
     
-    
+    //アラートメッセージのメソッド
     func displayMyAlertMessage(userMessage: String){
         let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertControllerStyle.alert)
         let okAction = UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil)
         myAlert.addAction(okAction);
         self.present(myAlert,animated:true, completion:nil)
-        
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
-    
-    
 }
