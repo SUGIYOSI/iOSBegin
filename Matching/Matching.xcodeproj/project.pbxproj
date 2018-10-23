@@ -8,20 +8,42 @@
 
 /* Begin PBXBuildFile section */
 		34976D522176C93B00829251 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D512176C93B00829251 /* AppDelegate.swift */; };
-		34976D542176C93B00829251 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D532176C93B00829251 /* ViewController.swift */; };
 		34976D572176C93B00829251 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34976D552176C93B00829251 /* Main.storyboard */; };
 		34976D592176C94100829251 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34976D582176C94100829251 /* Assets.xcassets */; };
 		34976D5C2176C94100829251 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34976D5A2176C94100829251 /* LaunchScreen.storyboard */; };
+		34976D642176C9C300829251 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D632176C9C300829251 /* LoginViewController.swift */; };
+		34976D662176CA0700829251 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D652176CA0700829251 /* TabBarController.swift */; };
+		34976D682176CA2000829251 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D672176CA2000829251 /* RegisterViewController.swift */; };
+		34976D6A2176CA4900829251 /* ReRegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D692176CA4900829251 /* ReRegisterViewController.swift */; };
+		34976D6C2176CA5A00829251 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D6B2176CA5A00829251 /* HomeViewController.swift */; };
+		34976D6E2176CB7900829251 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D6D2176CB7900829251 /* SettingViewController.swift */; };
+		34976D702176CB9B00829251 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D6F2176CB9B00829251 /* EventViewController.swift */; };
+		34976D722176CBEA00829251 /* BothMatchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D712176CBEA00829251 /* BothMatchViewController.swift */; };
+		34976D742176CC0A00829251 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D732176CC0A00829251 /* SearchViewController.swift */; };
+		34976D762176CC3C00829251 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D752176CC3C00829251 /* ProfileViewController.swift */; };
+		34976D782176CC6F00829251 /* SelfProfileSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D772176CC6F00829251 /* SelfProfileSettingViewController.swift */; };
+		34976D7A2176D96F00829251 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34976D792176D96F00829251 /* Data.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		34976D4E2176C93A00829251 /* Matching.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Matching.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		34976D512176C93B00829251 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		34976D532176C93B00829251 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		34976D562176C93B00829251 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		34976D582176C94100829251 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		34976D5B2176C94100829251 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		34976D5D2176C94100829251 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		34976D632176C9C300829251 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		34976D652176CA0700829251 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		34976D672176CA2000829251 /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
+		34976D692176CA4900829251 /* ReRegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReRegisterViewController.swift; sourceTree = "<group>"; };
+		34976D6B2176CA5A00829251 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		34976D6D2176CB7900829251 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		34976D6F2176CB9B00829251 /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
+		34976D712176CBEA00829251 /* BothMatchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BothMatchViewController.swift; sourceTree = "<group>"; };
+		34976D732176CC0A00829251 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		34976D752176CC3C00829251 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		34976D772176CC6F00829251 /* SelfProfileSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfProfileSettingViewController.swift; sourceTree = "<group>"; };
+		34976D792176D96F00829251 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,7 +77,18 @@
 			isa = PBXGroup;
 			children = (
 				34976D512176C93B00829251 /* AppDelegate.swift */,
-				34976D532176C93B00829251 /* ViewController.swift */,
+				34976D792176D96F00829251 /* Data.swift */,
+				34976D652176CA0700829251 /* TabBarController.swift */,
+				34976D632176C9C300829251 /* LoginViewController.swift */,
+				34976D672176CA2000829251 /* RegisterViewController.swift */,
+				34976D692176CA4900829251 /* ReRegisterViewController.swift */,
+				34976D6B2176CA5A00829251 /* HomeViewController.swift */,
+				34976D6F2176CB9B00829251 /* EventViewController.swift */,
+				34976D712176CBEA00829251 /* BothMatchViewController.swift */,
+				34976D6D2176CB7900829251 /* SettingViewController.swift */,
+				34976D732176CC0A00829251 /* SearchViewController.swift */,
+				34976D752176CC3C00829251 /* ProfileViewController.swift */,
+				34976D772176CC6F00829251 /* SelfProfileSettingViewController.swift */,
 				34976D552176C93B00829251 /* Main.storyboard */,
 				34976D582176C94100829251 /* Assets.xcassets */,
 				34976D5A2176C94100829251 /* LaunchScreen.storyboard */,
@@ -135,7 +168,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34976D542176C93B00829251 /* ViewController.swift in Sources */,
+				34976D642176C9C300829251 /* LoginViewController.swift in Sources */,
+				34976D742176CC0A00829251 /* SearchViewController.swift in Sources */,
+				34976D682176CA2000829251 /* RegisterViewController.swift in Sources */,
+				34976D662176CA0700829251 /* TabBarController.swift in Sources */,
+				34976D6E2176CB7900829251 /* SettingViewController.swift in Sources */,
+				34976D782176CC6F00829251 /* SelfProfileSettingViewController.swift in Sources */,
+				34976D702176CB9B00829251 /* EventViewController.swift in Sources */,
+				34976D762176CC3C00829251 /* ProfileViewController.swift in Sources */,
+				34976D7A2176D96F00829251 /* Data.swift in Sources */,
+				34976D6A2176CA4900829251 /* ReRegisterViewController.swift in Sources */,
+				34976D722176CBEA00829251 /* BothMatchViewController.swift in Sources */,
+				34976D6C2176CA5A00829251 /* HomeViewController.swift in Sources */,
 				34976D522176C93B00829251 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

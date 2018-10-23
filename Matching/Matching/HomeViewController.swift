@@ -10,26 +10,31 @@ import UIKit
 
 class HomeViewController: UIViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func viewWillAppear(_ animated: Bool) {
+       // LoginCheck()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.navigationItem.titleView = UIImageView(image:UIImage(named:"setting"))
+       // let button = UIImageView(image:UIImage(named:"setting"))
+       // self.navigationItem.setRightBarButtonItems(button, animated: true)
+        let oioioio: UIBarButtonItem = UIBarButtonItem(image: UIImage(named:"event"), style: UIBarButtonItemStyle.plain, target: self, action: nil)
+        self.navigationItem.leftBarButtonItem = oioioio
+        
+        
     }
-    */
-
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    @objc func LoginCheck(){
+        if NowUser.shared.nowuser.UserName == nil{
+            let nc = UINavigationController(rootViewController: LoginViewController())
+            self.present(nc, animated: true, completion: nil)
+        }
+    }
 }
+
+
