@@ -6,6 +6,7 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
     var users = [User()]
     var user  = User()
 
+    //UI部品
     let UserID: UITextField = {
         let textField = UITextField()
         textField.backgroundColor = UIColor(white: 0.9, alpha: 1)

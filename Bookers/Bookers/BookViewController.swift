@@ -223,6 +223,7 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
 }
 
+//TableViewCell
 class BookCustomCell: UITableViewCell {
     
     let reviewLabel:UITextView = {

@@ -108,7 +108,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         return cell
     }
     
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //Bookersの各BookTitleを参照し,searchResult[indexPath.row]から該当するBookを持ってくる。
         for book in Bookers {
@@ -118,7 +117,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
                 }
             }
         }
-        
         let vc = BookViewController()
         NowUser.shared.nowbook = Book
         navigationController?.pushViewController(vc, animated: true)
