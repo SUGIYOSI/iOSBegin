@@ -228,8 +228,7 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
             return
         }
         
-        if(Password.text != rePassword.text)
-        {
+        if(Password.text != rePassword.text){
             displayMyAlertMessage(userMessage: "パスワードが一致していません。")
             return
         }

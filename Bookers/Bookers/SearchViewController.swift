@@ -152,6 +152,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
         tableView.contentOffset = CGPoint(x: 0,y :0)
     }
     
+    //全ての値を初期化する
     func resetValue(){
         myItems.removeAll()
         searchResult.removeAll()
