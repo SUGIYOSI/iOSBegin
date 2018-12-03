@@ -81,8 +81,8 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
         button.layer.shadowOpacity = 0.5
         button.layer.shadowRadius = 5
         button.layer.shadowColor = UIColor.black.cgColor
-        button.setTitle("更新", for: UIControlState.normal)
-        button.addTarget(self, action: #selector(updateUser(_:)), for: UIControlEvents.touchUpInside)
+        button.setTitle("更新", for: UIControl.State.normal)
+        button.addTarget(self, action: #selector(updateUser(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
     
@@ -94,8 +94,8 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
         button.layer.shadowRadius = 5
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 7, height: 7)
-        button.setTitle("画像投稿", for: UIControlState.normal)
-        button.addTarget(self, action: #selector(postimage(_:)), for: UIControlEvents.touchUpInside)
+        button.setTitle("画像投稿", for: UIControl.State.normal)
+        button.addTarget(self, action: #selector(postimage(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
     
@@ -107,9 +107,9 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
         button.layer.shadowRadius = 5
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 7, height: 7)
-        button.setTitle("Logout", for: UIControlState.normal)
+        button.setTitle("Logout", for: UIControl.State.normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 13)
-        button.addTarget(self, action: #selector(logout(_:)), for: UIControlEvents.touchUpInside)
+        button.addTarget(self, action: #selector(logout(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
     
@@ -130,8 +130,8 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
                 users.append(contentsOf: unarchiveusers)
             }
         }
-        user = NowUser.shared.nowuser
         setView()
+        user = NowUser.shared.nowuser
         view.setNeedsLayout()
     }
     
@@ -142,8 +142,11 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
         let view22Width = self.view.frame.size.width / 22
         let view32Height = self.view.frame.size.height / 32
         
-        setView()
-       
+        view.addSubview(UserID)
+        view.addSubview(Password)
+        view.addSubview(rePassword)
+        view.addSubview(Email)
+        view.addSubview(importImage)
         view.addSubview(UserIDLabel)
         view.addSubview(UserLabel)
         view.addSubview(PasswordLabel)
@@ -250,7 +253,9 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
         UserID.text = user.UserID
         Password.text = user.Password
         rePassword.text = user.Password
-        importImage.image = UIImage(data: user.UserImage! as Data)
+        if let unwrapedUserImage = user.UserImage{
+            importImage.image = UIImage(data: unwrapedUserImage as Data)
+        }
     
         view.addSubview(UserID)
         view.addSubview(Password)
@@ -274,7 +279,7 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
                 use.Email     = Email.text
                 use.Password  = Password.text
                 use.UserImage = user.UserImage
-                user = use
+                NowUser.shared.nowuser = use
             }
         }
         
@@ -291,24 +296,21 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
     @objc func postimage (_ sender: UIButton){
         let image = UIImagePickerController()
         image.delegate = self
-        image.sourceType = UIImagePickerControllerSourceType.photoLibrary
+        image.sourceType = UIImagePickerController.SourceType.photoLibrary
         image.allowsEditing = false
         self.present(image, animated: true)
     }
     
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage
-        {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        // Local variable inserted by Swift 4.2 migrator.
+        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
+        if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage{
             importImage.image = image
-            let imageData: NSData = UIImagePNGRepresentation(image)! as NSData
+            let imageData: NSData? = image.pngData() as NSData?
             user.UserImage = imageData
         }
-        else
-        {
-            //ErrorMesseage
-        }
-        
         dismiss(animated: true, completion: nil)
     }
     
@@ -320,8 +322,8 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
     }
     
     func displayMyAlertMessage(userMessage: String){
-        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil)
+        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertController.Style.alert)
+        let okAction = UIAlertAction(title:"OK", style: UIAlertAction.Style.default, handler:nil)
         myAlert.addAction(okAction)
         self.present(myAlert,animated:true, completion:nil)
     }
@@ -331,4 +333,14 @@ class SettingViewController: UIViewController , UITextFieldDelegate , UIImagePic
     }
         
     
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
 }

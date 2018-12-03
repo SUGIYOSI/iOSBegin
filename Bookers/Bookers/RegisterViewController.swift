@@ -84,8 +84,8 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
         button.layer.shadowRadius = 5
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 7, height: 7)
-        button.setTitle("Login", for: UIControlState.normal)
-        button.addTarget(self, action: #selector(Login(_:)), for: UIControlEvents.touchUpInside)
+        button.setTitle("Login", for: UIControl.State.normal)
+        button.addTarget(self, action: #selector(Login(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
     
@@ -97,8 +97,8 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
         button.layer.shadowRadius = 5
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 7, height: 7)
-        button.setTitle("Register", for: UIControlState.normal)
-        button.addTarget(self, action: #selector(Register(_:)), for: UIControlEvents.touchUpInside)
+        button.setTitle("Register", for: UIControl.State.normal)
+        button.addTarget(self, action: #selector(Register(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
     
@@ -237,7 +237,7 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
         user.Email = Email.text
         user.UserID = UserID.text
         user.Password = Password.text
-        user.UserImage = UIImagePNGRepresentation(UIImage(named: "NoImage")!)! as NSData
+        user.UserImage = UIImage(named: "NoImage")?.pngData() as NSData?
         users.insert(user, at: 0)
         
         //デシリアライズ
@@ -252,8 +252,8 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
     
     //アラートメッセージ
     func displayMyAlertMessage(userMessage: String){
-        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil)
+        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertController.Style.alert)
+        let okAction = UIAlertAction(title:"OK", style: UIAlertAction.Style.default, handler:nil)
         myAlert.addAction(okAction);
         self.present(myAlert,animated:true, completion:nil)
     }

@@ -5,7 +5,6 @@ class PearsonViewController: UIViewController , UITableViewDelegate ,UITableView
     var Bookers = [BookData]()
     var myBookers = [BookData]()
     var Book = BookData()
-    var user = User()
     var tapUser = User()
     var tapUserImage = UIImage()
     var tableview: UITableView!
@@ -13,7 +12,6 @@ class PearsonViewController: UIViewController , UITableViewDelegate ,UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        let viewWidth = self.view.frame.size.width
         let viewHeight = self.view.frame.size.height
         
         let userDefaults = UserDefaults.standard
@@ -23,7 +21,6 @@ class PearsonViewController: UIViewController , UITableViewDelegate ,UITableView
             }
         }
         
-        user = NowUser.shared.nowuser
         Book = NowUser.shared.nowbook
         //Bookersの中から、そのユーザーの投稿したBookだけを取り出し、myBookrsに入れる
         for book in Bookers {
@@ -36,7 +33,9 @@ class PearsonViewController: UIViewController , UITableViewDelegate ,UITableView
         
         //NavigationBar
         let rightTapUserImageView: UIImageView = {
-            tapUserImage = (UIImage(data: tapUser.UserImage! as Data)?.resize(size: CGSize(width: 50, height: 50)).withRenderingMode(UIImageRenderingMode.alwaysOriginal))!
+            if let unwrapedUserImage = tapUser.UserImage{
+                tapUserImage = (UIImage(data: unwrapedUserImage as Data)?.resize(size: CGSize(width: 50, height: 50)).withRenderingMode(UIImage.RenderingMode.alwaysOriginal))!
+            }
          
             let imageView = UIImageView(image: tapUserImage)
             imageView.layer.cornerRadius = 6
@@ -55,15 +54,19 @@ class PearsonViewController: UIViewController , UITableViewDelegate ,UITableView
         tableview = UITableView()
         tableview.delegate = self
         tableview.dataSource = self
-        tableview.contentOffset = CGPoint(x: 0,y :44)
-        tableview.rowHeight = 100
-        tableview.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height + (navigationController?.navigationBar.frame.height)!, width: viewWidth, height: viewHeight - UIApplication.shared.statusBarFrame.height - (navigationController?.navigationBar.frame.height)!)
+        tableview.rowHeight = viewHeight / 7
         tableview.register(PearsonCustomCell.self, forCellReuseIdentifier: "PearsonCustomCell")
         self.view.addSubview(tableview)
         
+        tableview.translatesAutoresizingMaskIntoConstraints = false
+        tableview.topAnchor.constraint(equalTo: view.topAnchor,constant: UIApplication.shared.statusBarFrame.height + (navigationController?.navigationBar.frame.height)!).isActive = true
+        tableview.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        tableview.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        tableview.heightAnchor.constraint(equalToConstant: viewHeight - UIApplication.shared.statusBarFrame.height - (navigationController?.navigationBar.frame.height)!).isActive = true
     }
     
     @objc internal func leftBackButtonClick(sender: UIButton){
+        //ここをチェック
         NowUser.shared.nowbook = Book
         navigationController?.popViewController(animated: true)
     }
@@ -118,7 +121,7 @@ class PearsonCustomCell: UITableViewCell {
     
     // 引数のないコンストラクタみたいなもの。
     // インスタンスが生成されたときに動く関数
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         let viewHeight10 = self.contentView.frame.height / 10
@@ -150,8 +153,10 @@ class PearsonCustomCell: UITableViewCell {
         for(key,value) in myBookers[indexPath].BookViews {
             if value == tapUser.UserID {
                 reviewLabel.text = key
-                bookimage.image = UIImage(data: myBookers[indexPath].BookImage! as Data)
-                titleLabel.text = myBookers[indexPath].BookTitle!
+                if let unwrapedBookImage = myBookers[indexPath].BookImage{
+                    bookimage.image = UIImage(data: unwrapedBookImage as Data)
+                }
+                titleLabel.text = myBookers[indexPath].BookTitle
             }
         }
     }

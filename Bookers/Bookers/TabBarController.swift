@@ -9,10 +9,6 @@ class TabBarController: UITabBarController{
         case setting
     }
     
-    var searchview: SearchViewController!
-    var homeview: HomeViewController!
-    var postview: PostViewController!
-    var setting: SettingViewController!
     let vcArray: [ViewControllers] = [.home,.search,.post,.setting]
     
     override func viewDidLoad() {
@@ -53,8 +49,4 @@ class TabBarController: UITabBarController{
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
-
 }
-
-

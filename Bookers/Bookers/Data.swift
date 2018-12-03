@@ -17,8 +17,8 @@ class BookData: NSObject, NSCoding {
         BookTitle = aDecoder.decodeObject(forKey: "booktitle") as? String
         Author = aDecoder.decodeObject(forKey: "author") as? String
         BookImage = aDecoder.decodeObject(forKey: "bookimage") as? NSData
-        guard let low = aDecoder.decodeObject(forKey: "bookview") as? [String: String] else { return }
-        BookViews = low
+        guard let notNilBookViews = aDecoder.decodeObject(forKey: "bookview") as? [String: String] else { return }
+        BookViews = notNilBookViews
     }
     
     //エンコード処理

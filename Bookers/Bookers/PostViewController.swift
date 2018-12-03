@@ -45,13 +45,13 @@ class PostViewController: UIViewController , UINavigationControllerDelegate, UII
     let saveButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(red: 89/255, green: 172/255, blue: 255/255, alpha: 1)
-        button.setTitle("画像を更新する", for: UIControlState.normal)
+        button.setTitle("画像を更新する", for: UIControl.State.normal)
         button.layer.cornerRadius = 12
         button.layer.shadowOpacity = 0.5
         button.layer.shadowRadius = 5
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 7, height: 7)
-        button.addTarget(self, action: #selector(buttonEvent(_:)), for: UIControlEvents.touchUpInside)
+        button.addTarget(self, action: #selector(buttonEvent(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
 
@@ -62,7 +62,9 @@ class PostViewController: UIViewController , UINavigationControllerDelegate, UII
         }
         importImageSwich = true
         user = NowUser.shared.nowuser
-        importImage.image = UIImage(data: Book.BookImage! as Data)
+        if let unwrapedBookImage = Book.BookImage{
+            importImage.image = UIImage(data: unwrapedBookImage as Data)
+        }
         importImage.setNeedsLayout()
     }
     
@@ -160,13 +162,17 @@ class PostViewController: UIViewController , UINavigationControllerDelegate, UII
             if book.BookTitle == Book.BookTitle {
                 book.BookTitle = Book.BookTitle
                 book.Author    = Book.Author
-                book.BookViews.updateValue(user.UserID!, forKey: textview.text)
+                if let unwrapedUserID = user.UserID {
+                    book.BookViews.updateValue(unwrapedUserID, forKey: textview.text)
+                }
                 book.BookImage = Book.BookImage
                 newBookCheckSwich = false
             }
         }
         if newBookCheckSwich == true {
-            Book.BookViews.updateValue(user.UserID!, forKey: textview.text)
+            if let unwrapedUserID = user.UserID {
+                Book.BookViews.updateValue(unwrapedUserID, forKey: textview.text)
+            }
             Bookers.append(Book)
         }
         
@@ -184,7 +190,8 @@ class PostViewController: UIViewController , UINavigationControllerDelegate, UII
         booktitle.text = ""
         bookauthor.text = ""
         Book = BookData()
-        Book.BookImage = UIImagePNGRepresentation(UIImage(named: "NoImage")!)! as NSData
+        Bookers.removeAll()
+        Book.BookImage = UIImage(named: "NoImage")?.pngData() as NSData?
         let userDefaults = UserDefaults.standard
         if let storedBookers = userDefaults.object(forKey: "Bookers") as? Data {
             if let unarchiveBookers = NSKeyedUnarchiver.unarchiveObject(with: storedBookers) as? [BookData] {
@@ -196,32 +203,29 @@ class PostViewController: UIViewController , UINavigationControllerDelegate, UII
     @objc func buttonEvent(_ sender: UIButton) {
         let image = UIImagePickerController()
         image.delegate = self
-        image.sourceType = UIImagePickerControllerSourceType.photoLibrary
+        image.sourceType = UIImagePickerController.SourceType.photoLibrary
         image.allowsEditing = false
         self.present(image, animated: true){
         }
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage
-        {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
+        if let image = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as? UIImage{
             importImage.image = image
-            let imageData: NSData = UIImagePNGRepresentation(image)! as NSData
+            let imageData: NSData? = image.pngData() as NSData?
             Book.BookImage = imageData
         }
-        else
-        {
-            //ErrorMesseage
-        }
-        
         importImageSwich = false
         dismiss(animated: true, completion: nil)
     }
     
     func displayMyAlertMessage(userMessage: String){
-        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil)
-        myAlert.addAction(okAction);
+        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertController.Style.alert)
+        let okAction = UIAlertAction(title:"OK", style: UIAlertAction.Style.default, handler:nil)
+        myAlert.addAction(okAction)
         self.present(myAlert,animated:true, completion:nil)
     }
     
@@ -232,4 +236,14 @@ class PostViewController: UIViewController , UINavigationControllerDelegate, UII
     }
     
     
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
 }

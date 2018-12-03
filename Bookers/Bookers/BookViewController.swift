@@ -6,7 +6,6 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
     var Bookers = [BookData]()
     var Book   = BookData()
     var users = [User]()
-    var user  = User()
     var tapuser = User()
     //Keyは本のレビュー,Valueはレビューを投稿した人のUserID。
     var StockKeys: [String] = Array()
@@ -15,7 +14,6 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        user = NowUser.shared.nowuser
         Book = NowUser.shared.nowbook
         StockKeys = Array(Book.BookViews.keys)
         StockValues = Array(Book.BookViews.values)
@@ -45,6 +43,7 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
         //viewその１（上画面）
         let view1: UIView = {
             let view1 = UIView()
+            //AutoLayout出来ないのでCGRect使います！
             view1.frame = CGRect(x: 0, y: 0, width: viewWidth, height: viewHeight / 2)
             view1.backgroundColor = .white
             
@@ -104,7 +103,9 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
                 return image
             }()
             
-            viewImage.image  = UIImage(data: Book.BookImage! as Data)
+            if let unwrapedBookImage = Book.BookImage{
+                viewImage.image  = UIImage(data: unwrapedBookImage as Data)
+            }
             
             view1.addSubview(booktitle)
             view1.addSubview(bookauthor)
@@ -148,17 +149,22 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
         //viewその２（下画面）
         let view2: UIView = {
             let view2 = UIView()
+            //AutoLayout出来ないのでCGRect使います！
             view2.frame = CGRect(x: 0, y: viewHeight / 2, width: viewWidth, height: viewHeight / 2)
-            let view2height = view2.frame.size.height
-        
+
             //TableView
             tableView = UITableView()
-            tableView.rowHeight = 90
+            tableView.rowHeight = viewHeight / 7
             tableView.delegate = self
             tableView.dataSource = self
-            tableView.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height, width: viewWidth, height: view2height )
             tableView.register(BookCustomCell.self, forCellReuseIdentifier: "BookCustomCell")
             view2.addSubview(tableView)
+            
+            tableView.translatesAutoresizingMaskIntoConstraints = false
+            tableView.topAnchor.constraint(equalTo: view2.topAnchor).isActive = true
+            tableView.widthAnchor.constraint(equalTo: view2.widthAnchor).isActive = true
+            tableView.centerXAnchor.constraint(equalTo: view2.centerXAnchor).isActive = true
+            tableView.heightAnchor.constraint(equalTo: view2.heightAnchor).isActive = true
             return view2
         }()
         
@@ -195,12 +201,12 @@ class BookViewController: UIViewController, UITableViewDelegate, UITableViewData
         navigationController?.pushViewController(vc, animated: true)
     }
     
-    func tableView(_ tableview: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath){
+    func tableView(_ tableview: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath){
         //削除可能かどうか
-        if editingStyle == UITableViewCellEditingStyle.delete {
+        if editingStyle == UITableViewCell.EditingStyle.delete {
             
             //それぞれ削除する
-            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
+            tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.fade)
             StockKeys.remove(at: indexPath.row)
             Book.BookViews.removeValue(forKey: StockKeys[indexPath.row])
             
@@ -248,7 +254,7 @@ class BookCustomCell: UITableViewCell {
     
     // 引数のないコンストラクタみたいなもの。
     // インスタンスが生成されたときに動く関数
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         let viewHeight10 = self.contentView.frame.height / 10
@@ -274,7 +280,9 @@ class BookCustomCell: UITableViewCell {
     func setCell(indexPath: Int, users: [User], StockValues: [String], StockKeys: [String]){
         for use in users {
             if use.UserID == StockValues[indexPath] {
-                userimage.image = UIImage(data: use.UserImage! as Data)?.resize(size: CGSize(width: 50, height: 50))
+                if let unwrapedUserImage = use.UserImage{
+                    userimage.image = UIImage(data: unwrapedUserImage as Data)?.resize(size: CGSize(width: 50, height: 50))
+                }
             }
         }
         reviewLabel.text = StockKeys[indexPath]
@@ -291,7 +299,7 @@ extension UIBarButtonItem {
     }
     
     convenience init(barButtonHiddenItem: HiddenItem, target: AnyObject?, action: Selector?) {
-        let systemItem = UIBarButtonSystemItem(rawValue: barButtonHiddenItem.rawValue)
+        let systemItem = UIBarButtonItem.SystemItem(rawValue: barButtonHiddenItem.rawValue)
         self.init(barButtonSystemItem: systemItem!, target: target, action: action)
     }
 }

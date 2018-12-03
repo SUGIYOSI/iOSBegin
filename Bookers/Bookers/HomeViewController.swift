@@ -4,10 +4,9 @@ class HomeViewController: UIViewController ,UITableViewDelegate ,UITableViewData
     
     var Bookers = [BookData]()
     var myBookers = [BookData]()
-    var Book = BookData()
     var user = User()
     var userImage = UIImage()
-    var tableview: UITableView!
+    var tableView: UITableView!
   
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -24,12 +23,11 @@ class HomeViewController: UIViewController ,UITableViewDelegate ,UITableViewData
         }
         setNavigationBar()
         navigationController?.navigationBar.setNeedsLayout()
-        tableview.reloadData()
+        tableView.reloadData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setNavigationBar()
         setTableView()
     }
 
@@ -64,7 +62,6 @@ class HomeViewController: UIViewController ,UITableViewDelegate ,UITableViewData
         user = NowUser.shared.nowuser
         myBookers.removeAll()
         Bookers.removeAll()
-        Book = BookData()
     }
     
     //シリアライズ
@@ -83,7 +80,9 @@ class HomeViewController: UIViewController ,UITableViewDelegate ,UITableViewData
         let leftUserImageView: UIImageView = {
             //一番最初に画面を開いた時、userImageにnilが入ってエラーが出るのを防ぐため
             if NowUser.shared.nowuser.UserID != nil {
-            userImage = (UIImage(data: user.UserImage! as Data)?.resize(size: CGSize(width: 50, height: 50)).withRenderingMode(UIImageRenderingMode.alwaysOriginal))!
+                if let unwrapedUserImage = user.UserImage{
+                     userImage = (UIImage(data: unwrapedUserImage as Data)?.resize(size: CGSize(width: 50, height: 50)).withRenderingMode(UIImage.RenderingMode.alwaysOriginal))!
+                }
             }
             //ここでやっと初期化
             let imageView = UIImageView(image: userImage)
@@ -99,15 +98,19 @@ class HomeViewController: UIViewController ,UITableViewDelegate ,UITableViewData
     }
     
     func setTableView(){
-        let viewWidth = self.view.frame.size.width
         let viewHeight = self.view.frame.size.height
-        tableview = UITableView()
-        tableview.delegate = self
-        tableview.dataSource = self
-        tableview.rowHeight = 100
-        tableview.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height + (navigationController?.navigationBar.frame.height)!, width: viewWidth, height: viewHeight - UIApplication.shared.statusBarFrame.height - (navigationController?.navigationBar.frame.height)!)
-        tableview.register(HomeCustomCell.self, forCellReuseIdentifier: "HomeCustomCell")
-        self.view.addSubview(tableview)
+        tableView = UITableView()
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.rowHeight = viewHeight / 7
+        tableView.register(HomeCustomCell.self, forCellReuseIdentifier: "HomeCustomCell")
+        self.view.addSubview(tableView)
+        
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.topAnchor,constant: UIApplication.shared.statusBarFrame.height + (navigationController?.navigationBar.frame.height)!).isActive = true
+        tableView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        tableView.heightAnchor.constraint(equalToConstant: viewHeight - UIApplication.shared.statusBarFrame.height - (navigationController?.navigationBar.frame.height)!).isActive = true
     }
     
     
@@ -150,7 +153,7 @@ class HomeCustomCell: UITableViewCell {
     
 
     // インスタンスが生成されたときに動く関数
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         let viewHeight10 = self.contentView.frame.height / 10
@@ -185,13 +188,11 @@ class HomeCustomCell: UITableViewCell {
         for(key,value) in myBookers[indexPath].BookViews {
             if value == user.UserID {
                 reviewLabel.text = key
-                bookimage.image  = (UIImage(data: myBookers[indexPath].BookImage! as Data))?.resize(size: CGSize(width: 50, height: 50))
-                titleLabel.text  = myBookers[indexPath].BookTitle!
+                if let unwrapedBookImage = myBookers[indexPath].BookImage{
+                    bookimage.image = (UIImage(data: unwrapedBookImage as Data))?.resize(size: CGSize(width: 50, height: 50))
+                }
+                titleLabel.text = myBookers[indexPath].BookTitle
             }
         }
     }
 }
-
-
-
-

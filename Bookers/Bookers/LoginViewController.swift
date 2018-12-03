@@ -48,13 +48,13 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
     let LoginButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(red: 255/255, green: 110/255, blue: 134/255, alpha: 1)
-        button.setTitle("Login", for: UIControlState.normal)
+        button.setTitle("Login", for: UIControl.State.normal)
         button.layer.cornerRadius = 12
         button.layer.shadowOpacity = 0.5
         button.layer.shadowRadius = 5
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 7, height: 7)
-        button.addTarget(self, action: #selector(LoginEvent(_:)), for: UIControlEvents.touchUpInside)
+        button.addTarget(self, action: #selector(LoginEvent(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
     
@@ -66,8 +66,8 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
         button.layer.shadowRadius = 5
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 7, height: 7)
-        button.setTitle("Register", for: UIControlState.normal)
-        button.addTarget(self, action: #selector(RegisterEvent(_:)), for: UIControlEvents.touchUpInside)
+        button.setTitle("Register", for: UIControl.State.normal)
+        button.addTarget(self, action: #selector(RegisterEvent(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
     
@@ -171,8 +171,8 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
     
     //アラートメッセージのメソッド
     func displayMyAlertMessage(userMessage: String){
-        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil)
+        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertController.Style.alert)
+        let okAction = UIAlertAction(title:"OK", style: UIAlertAction.Style.default, handler:nil)
         myAlert.addAction(okAction);
         self.present(myAlert,animated:true, completion:nil)
     }

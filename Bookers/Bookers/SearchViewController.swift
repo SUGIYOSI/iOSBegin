@@ -1,13 +1,13 @@
 import UIKit
 
-class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource  {
+class SearchViewController: UIViewController,UISearchControllerDelegate, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource ,UISearchResultsUpdating {
     
     var Bookers = [BookData]()
     var Book = BookData()
     var searchResult: Array = Array<String>()
     var myItems     : Array = Array<String>()
-    var searchBar: UISearchBar!
     var tableView: UITableView!
+    var searchController: UISearchController!
     
     //Search（検索）する時、これの他に効率のいいアルゴリズムを考えられませんでした。
     
@@ -33,69 +33,45 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let viewWidth = self.view.frame.size.width
         let viewHeight = self.view.frame.size.height
         
-        //NavigationBar
+        //NavigationBarとsearchBar
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        //searchBarはsearchControllerからアクセスできることを示している一文
+        searchController.searchBar.barTintColor = UIColor(white: 0.9, alpha: 1)
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+    
         self.navigationItem.title = "本検索"
         self.navigationController?.navigationBar.barTintColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1)
-        let rightSearchButton =  UIBarButtonItem(barButtonSystemItem:  .search, target: self, action: #selector(rightBarBtnClicked(sender:)))
-        self.navigationItem.rightBarButtonItem = rightSearchButton
-        
-        //SearchBar
-        searchBar = UISearchBar()
-        searchBar.delegate = self
-        searchBar.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height, width: viewWidth, height: 44)
-        searchBar.showsCancelButton = true
-        searchBar.barTintColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1)
         
         //TableView
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height + (navigationController?.navigationBar.frame.height)!, width: viewWidth, height: viewHeight - UIApplication.shared.statusBarFrame.height-(navigationController?.navigationBar.frame.height)!)
-        tableView.tableHeaderView = searchBar
-        tableView.contentOffset = CGPoint(x: 0,y :44)    //サーチバーの高さだけ初期位置を下げる
         tableView.register(SearchCustomCell.self, forCellReuseIdentifier: "SearchCustomCell")
-        tableView.rowHeight = 70
+        tableView.rowHeight = viewHeight / 9
         self.view.addSubview(tableView)
+        
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.topAnchor,constant: UIApplication.shared.statusBarFrame.height + (navigationController?.navigationBar.frame.height)!).isActive = true
+        tableView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        tableView.heightAnchor.constraint(equalToConstant: viewHeight - UIApplication.shared.statusBarFrame.height - (navigationController?.navigationBar.frame.height)!).isActive = true
     }
     
-    //渡された文字列を含む要素を検索し、テーブルビューを再表示する
-    func searchItems(searchText: String){
-        //要素を検索する
-        if searchText != "" {
-            searchResult = myItems.filter { myItem in
-                return (myItem ).contains(searchText)
-                } as Array
-        }else{
-            //渡された文字列が空の場合は全てを表示
+    func updateSearchResults(for searchController: UISearchController) {
+        // SearchBarに入力したテキストを使って表示データをフィルタリングする。
+        let text = searchController.searchBar.text ?? ""
+        if text.isEmpty {
             searchResult = myItems
+        } else {
+            searchResult = myItems.filter { $0.contains(text) }
         }
         tableView.reloadData()
     }
-    
-    //検索しているとき、テキストが変更される毎に呼ばれる
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        searchItems(searchText: searchText)
-    }
-    
-    //検索バーのキャンセルボタンが押されると呼ばれる
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.text = ""
-        self.view.endEditing(true)
-        searchResult = myItems
-        tableView.reloadData()
-    }
-    
-    
-    //検索バーのSearchボタンが押されると呼ばれる
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        self.view.endEditing(true)
-        //検索する
-        searchItems(searchText: searchBar.text! as String)
-    }
-    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return searchResult.count
@@ -123,22 +99,24 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
     }
     
     
-    func tableView(_ tableview: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath){
+    func tableView(_ tableview: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath){
         //削除可能かどうか
-        if editingStyle == UITableViewCellEditingStyle.delete {
+        if editingStyle == UITableViewCell.EditingStyle.delete {
             //Bookersの各BookTitleを参照し、searchResult[indexPath.row]から該当するBookを削除する。
             for book in Bookers {
                 if let title = book.BookTitle {
                     if title == searchResult[indexPath.row] {
-                        let index: Int = Bookers.index(of: book)!
-                        Bookers.remove(at: index)
+                        if let BookersIndex = Bookers.index(of: book) {
+                            let index: Int = BookersIndex
+                            Bookers.remove(at: index)
+                        }
                     }
                 }
             }
             //searchResultも削除
             searchResult.remove(at: indexPath.row)
             //セルを削除
-            tableview.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
+            tableview.deleteRows(at: [indexPath], with: UITableView.RowAnimation.fade)
             //デシリアライズ処理（Bookers）
             let data: Data = NSKeyedArchiver.archivedData(withRootObject: Bookers)
             let userDefaults = UserDefaults.standard
@@ -147,11 +125,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
             tableview.reloadData()
         }
     }
-    
-    @objc func rightBarBtnClicked(sender: UIButton){
-        tableView.contentOffset = CGPoint(x: 0,y :0)
-    }
-    
+
     //全ての値を初期化する
     func resetValue(){
         myItems.removeAll()
@@ -163,7 +137,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDe
 
 
 class SearchCustomCell: UITableViewCell {
-    
     
     let bookimage: UIImageView = {
         let image = UIImageView()
@@ -189,7 +162,7 @@ class SearchCustomCell: UITableViewCell {
     
     // 引数のないコンストラクタみたいなもの。
     // インスタンスが生成されたときに動く関数
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         let viewHeight10 = self.contentView.frame.height / 10
