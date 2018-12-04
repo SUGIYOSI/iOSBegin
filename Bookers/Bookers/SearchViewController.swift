@@ -126,6 +126,11 @@ class SearchViewController: UIViewController,UISearchControllerDelegate, UISearc
         }
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
     //全ての値を初期化する
     func resetValue(){
         myItems.removeAll()
