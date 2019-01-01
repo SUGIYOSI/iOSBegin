@@ -1,11 +1,3 @@
-//
-//  LoginViewController.swift
-//  Bookers
-//
-//  Created by 杉山佳史 on 2018/09/19.
-//  Copyright © 2018年 SUGIYOSI. All rights reserved.
-//
-
 import UIKit
 
 
@@ -13,24 +5,30 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
     
     var users = [User()]
     var user  = User()
-    
 
-    
+    //UI部品
     let UserID: UITextField = {
-        let textfield = UITextField()
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        return textfield
+        let textField = UITextField()
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.borderStyle = .none
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     let Password: UITextField = {
-        let textfield = UITextField()
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        return textfield
+        let textField = UITextField()
+        textField.isSecureTextEntry = true
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     let LoginLabel: UILabel = {
         let label = UILabel()
         label.text = "Login"
+        label.font = UIFont.italicSystemFont(ofSize: 40)
         label.textAlignment = NSTextAlignment.center
         return label
     }()
@@ -41,49 +39,46 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
         return label
     }()
     
-    
     let PasswordLabel: UILabel = {
         let label = UILabel()
         label.text = "Password"
         return label
     }()
     
-    let ORLabel: UILabel = {
-        let label = UILabel()
-        label.text = "OR"
-        label.textAlignment = NSTextAlignment.center
-        return label
-    }()
-    
     let LoginButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        button.setTitle("Login", for: UIControlState.normal)
-        button.addTarget(self, action: #selector(LoginEvent(_:)), for: UIControlEvents.touchUpInside)
+        button.backgroundColor = UIColor(red: 255/255, green: 110/255, blue: 134/255, alpha: 1)
+        button.setTitle("Login", for: UIControl.State.normal)
+        button.layer.cornerRadius = 12
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowRadius = 5
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 7, height: 7)
+        button.addTarget(self, action: #selector(LoginEvent(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
     
     let RegisterButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        button.setTitle("Register", for: UIControlState.normal)
-        button.addTarget(self, action: #selector(RegisterEvent(_:)), for: UIControlEvents.touchUpInside)
+        button.backgroundColor = UIColor(red: 89/255, green: 172/255, blue: 255/255, alpha: 1)
+        button.layer.cornerRadius = 12
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowRadius = 5
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 7, height: 7)
+        button.setTitle("Register", for: UIControl.State.normal)
+        button.addTarget(self, action: #selector(RegisterEvent(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
     
-    
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        
+        view.backgroundColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1) 
+        navigationController?.setNavigationBarHidden(true, animated: false)
         
         let view22Width = self.view.frame.size.width / 22
         let view32Height = self.view.frame.size.height / 32
-        
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        
+    
         let userDefaults = UserDefaults.standard
         if let storedusers = userDefaults.object(forKey: "users") as? Data {
             if let unarchiveusers = NSKeyedUnarchiver.unarchiveObject(with: storedusers) as? [User] {
@@ -91,34 +86,30 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
             }
         }
         
-        
         UserID.delegate = self
         Password.delegate = self
         UserID.placeholder = "UserIDを入力"
         Password.placeholder = "Passwordを入力"
-        
         UserID.clearButtonMode = .always
         Password.clearButtonMode = .always
         
-
         view.addSubview(UserID)
         view.addSubview(UserIDLabel)
         view.addSubview(LoginLabel)
         view.addSubview(Password)
         view.addSubview(PasswordLabel)
-        view.addSubview(ORLabel)
         view.addSubview(RegisterButton)
         view.addSubview(LoginButton)
         
         //AutoLayout
         LoginLabel.translatesAutoresizingMaskIntoConstraints = false
-        LoginLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: view32Height * 5).isActive = true
-        LoginLabel.widthAnchor.constraint(equalToConstant: view22Width * 5).isActive = true
+        LoginLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: view32Height * 3).isActive = true
+        LoginLabel.widthAnchor.constraint(equalToConstant: view22Width * 10).isActive = true
         LoginLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        LoginLabel.heightAnchor.constraint(equalToConstant: view32Height * 3).isActive = true
+        LoginLabel.heightAnchor.constraint(equalToConstant: view32Height * 5).isActive = true
         
         UserIDLabel.translatesAutoresizingMaskIntoConstraints = false
-        UserIDLabel.topAnchor.constraint(equalTo: LoginLabel.bottomAnchor, constant: view32Height * 1.5).isActive = true
+        UserIDLabel.topAnchor.constraint(equalTo: LoginLabel.bottomAnchor, constant: view32Height * 2).isActive = true
         UserIDLabel.leadingAnchor.constraint(equalTo: UserID.leadingAnchor).isActive = true
         UserIDLabel.widthAnchor.constraint(equalToConstant: view22Width * 6).isActive = true
         UserIDLabel.heightAnchor.constraint(equalToConstant: view32Height * 1.5).isActive = true
@@ -142,29 +133,20 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
         Password.heightAnchor.constraint(equalToConstant: view32Height * 1.5).isActive = true
         
         LoginButton.translatesAutoresizingMaskIntoConstraints = false
-        LoginButton.topAnchor.constraint(equalTo: Password.bottomAnchor, constant: view32Height * 2).isActive = true
+        LoginButton.topAnchor.constraint(equalTo: Password.bottomAnchor, constant: view32Height * 2.5).isActive = true
         LoginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        LoginButton.widthAnchor.constraint(equalToConstant: view22Width * 4).isActive = true
-        LoginButton.heightAnchor.constraint(equalToConstant: view32Height).isActive = true
-        
-        ORLabel.translatesAutoresizingMaskIntoConstraints = false
-        ORLabel.topAnchor.constraint(equalTo: LoginButton.bottomAnchor, constant: view32Height * 1).isActive = true
-        ORLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        ORLabel.widthAnchor.constraint(equalToConstant: view22Width * 4).isActive = true
-        ORLabel.heightAnchor.constraint(equalToConstant: view32Height).isActive = true
+        LoginButton.widthAnchor.constraint(equalToConstant: view22Width * 9).isActive = true
+        LoginButton.heightAnchor.constraint(equalToConstant: view32Height * 2).isActive = true
         
         RegisterButton.translatesAutoresizingMaskIntoConstraints = false
-        RegisterButton.topAnchor.constraint(equalTo: ORLabel.bottomAnchor, constant: view32Height * 1).isActive = true
+        RegisterButton.topAnchor.constraint(equalTo: LoginButton.bottomAnchor, constant: view32Height * 3).isActive = true
         RegisterButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        RegisterButton.widthAnchor.constraint(equalToConstant: view22Width * 4).isActive = true
-        RegisterButton.heightAnchor.constraint(equalToConstant: view32Height).isActive = true
-        
-        
+        RegisterButton.widthAnchor.constraint(equalToConstant: view22Width * 5).isActive = true
+        RegisterButton.heightAnchor.constraint(equalToConstant: view32Height * 1.5).isActive = true
     }
     
-    
-    @objc internal func LoginEvent(_ sender: UIButton){
-        
+    @objc func LoginEvent(_ sender: UIButton){
+        //ログインできるかどうか調べる
         for use in users {
             if use.UserID == UserID.text{
                 if use.Password == Password.text{
@@ -172,38 +154,30 @@ class LoginViewController: UIViewController , UITextFieldDelegate{
                 }
             }
         }
-        
+        //ログインできなかった場合
         if user.UserID == nil{
             displayMyAlertMessage(userMessage: "IDかパスワードが一致していません。")
             return
         }
-        
-        let vc = HomeViewController()
-        vc.user = user
-        navigationController?.pushViewController(vc, animated: true)
-        
+        //ユーザー情報をシングルトンに保存してホーム画面に戻る
+        NowUser.shared.nowuser = user
+        dismiss(animated: true)
     }
     
- 
-    
+    //登録画面へ
     @objc internal func RegisterEvent(_ sender: UIButton){
-        let vc = RegisterViewController()
-        navigationController?.pushViewController(vc, animated: true)
+        navigationController?.pushViewController(RegisterViewController(), animated: true)
     }
     
+    //アラートメッセージのメソッド
     func displayMyAlertMessage(userMessage: String){
-        
-        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil)
+        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertController.Style.alert)
+        let okAction = UIAlertAction(title:"OK", style: UIAlertAction.Style.default, handler:nil)
         myAlert.addAction(okAction);
         self.present(myAlert,animated:true, completion:nil)
-        
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
-    
-    
 }

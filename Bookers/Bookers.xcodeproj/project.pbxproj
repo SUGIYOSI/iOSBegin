@@ -20,6 +20,7 @@
 		34A1BB9721527FDE00D46F62 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A1BB9621527FDE00D46F62 /* RegisterViewController.swift */; };
 		34A1BB9921535A0800D46F62 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A1BB9821535A0800D46F62 /* SettingViewController.swift */; };
 		34A1BB9B2153CB8600D46F62 /* PearsonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A1BB9A2153CB8600D46F62 /* PearsonViewController.swift */; };
+		34A1BBC1215BC7F600D46F62 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A1BBC0215BC7F600D46F62 /* TabBarController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		34A1BB9621527FDE00D46F62 /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		34A1BB9821535A0800D46F62 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		34A1BB9A2153CB8600D46F62 /* PearsonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PearsonViewController.swift; sourceTree = "<group>"; };
+		34A1BBC0215BC7F600D46F62 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,13 +74,14 @@
 			children = (
 				34A1BB7621527EEF00D46F62 /* AppDelegate.swift */,
 				34A1BB8821527F1500D46F62 /* Data.swift */,
+				34A1BBC0215BC7F600D46F62 /* TabBarController.swift */,
 				34A1BB9421527FCB00D46F62 /* LoginViewController.swift */,
 				34A1BB9621527FDE00D46F62 /* RegisterViewController.swift */,
 				34A1BB8C21527F5700D46F62 /* HomeViewController.swift */,
 				34A1BB8A21527F3800D46F62 /* SearchViewController.swift */,
 				34A1BB9021527F8400D46F62 /* BookViewController.swift */,
-				34A1BB9221527FAB00D46F62 /* PostViewController.swift */,
 				34A1BB9A2153CB8600D46F62 /* PearsonViewController.swift */,
+				34A1BB9221527FAB00D46F62 /* PostViewController.swift */,
 				34A1BB9821535A0800D46F62 /* SettingViewController.swift */,
 				34A1BB7A21527EEF00D46F62 /* Main.storyboard */,
 				34A1BB7D21527EF200D46F62 /* Assets.xcassets */,
@@ -120,6 +123,7 @@
 				TargetAttributes = {
 					34A1BB7221527EEF00D46F62 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1010;
 					};
 				};
 			};
@@ -161,6 +165,7 @@
 			files = (
 				34A1BB9521527FCB00D46F62 /* LoginViewController.swift in Sources */,
 				34A1BB9B2153CB8600D46F62 /* PearsonViewController.swift in Sources */,
+				34A1BBC1215BC7F600D46F62 /* TabBarController.swift in Sources */,
 				34A1BB9321527FAB00D46F62 /* PostViewController.swift in Sources */,
 				34A1BB8B21527F3800D46F62 /* SearchViewController.swift in Sources */,
 				34A1BB9721527FDE00D46F62 /* RegisterViewController.swift in Sources */,
@@ -320,7 +325,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = fuller.Bookers;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -337,7 +342,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = fuller.Bookers;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

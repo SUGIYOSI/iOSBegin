@@ -1,11 +1,3 @@
-//
-//  RegisterViewController.swift
-//  Bookers
-//
-//  Created by 杉山佳史 on 2018/09/19.
-//  Copyright © 2018年 SUGIYOSI. All rights reserved.
-//
-
 import UIKit
 
 class RegisterViewController: UIViewController , UITextFieldDelegate{
@@ -15,54 +7,63 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
     
     
     let Email: UITextField = {
-        let textfield = UITextField()
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        return textfield
+        let textField = UITextField()
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     
     let UserID: UITextField = {
-        let textfield = UITextField()
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        
-        return textfield
+        let textField = UITextField()
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     let Password: UITextField = {
-        let textfield = UITextField()
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        return textfield
+        let textField = UITextField()
+        textField.isSecureTextEntry = true
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     let rePassword: UITextField = {
-        let textfield = UITextField()
-        textfield.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        return textfield
+        let textField = UITextField()
+        textField.isSecureTextEntry = true
+        textField.backgroundColor = UIColor(white: 0.9, alpha: 1)
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = true
+        return textField
     }()
     
     
     
     let EmailLabel: UILabel = {
         let label = UILabel()
-        label.text = "Email:"
+        label.text = "Email"
         return label
     }()
     
     let UserIDLabel: UILabel = {
         let label = UILabel()
-        label.text = "UserID:"
+        label.text = "UserID"
         return label
     }()
     
     let PasswordLabel: UILabel = {
         let label = UILabel()
-        label.text = "Password:"
+        label.text = "Password"
         return label
     }()
     
     let rePasswordLabel: UILabel = {
         let label = UILabel()
-        label.text = "Repeat Passoword:"
+        label.text = "Repeat Passoword"
         return label
     }()
     
@@ -70,34 +71,45 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
     let RegisterLabel: UILabel = {
         let label = UILabel()
         label.text = "Register"
+        label.font = UIFont.italicSystemFont(ofSize: 40)
         label.textAlignment = NSTextAlignment.center
         return label
     }()
     
     let LoginButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        button.setTitle("Login", for: UIControlState.normal)
-        button.addTarget(self, action: #selector(Login(_:)), for: UIControlEvents.touchUpInside)
+        button.backgroundColor = UIColor(red: 255/255, green: 110/255, blue: 134/255, alpha: 1)
+        button.layer.cornerRadius = 12
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowRadius = 5
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 7, height: 7)
+        button.setTitle("Login", for: UIControl.State.normal)
+        button.addTarget(self, action: #selector(Login(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
     
     let RegisterButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        button.setTitle("Register", for: UIControlState.normal)
-        button.addTarget(self, action: #selector(Register(_:)), for: UIControlEvents.touchUpInside)
+        button.backgroundColor = UIColor(red: 89/255, green: 172/255, blue: 255/255, alpha: 1)
+        button.layer.cornerRadius = 12
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowRadius = 5
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 7, height: 7)
+        button.setTitle("Register", for: UIControl.State.normal)
+        button.addTarget(self, action: #selector(Register(_:)), for: UIControl.Event.touchUpInside)
         return button
     }()
     
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .white
-        navigationController?.setNavigationBarHidden(true, animated: false)
+        view.backgroundColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1) 
         let view22Width = self.view.frame.size.width / 22
         let view32Height = self.view.frame.size.height / 32
-        
+        //シリアライズ処理
         let userDefaults = UserDefaults.standard
         if let storedusers = userDefaults.object(forKey: "users") as? Data {
             if let unarchiveusers = NSKeyedUnarchiver.unarchiveObject(with: storedusers) as? [User] {
@@ -105,6 +117,7 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
             }
         }
         
+        navigationController?.setNavigationBarHidden(true, animated: false)
         
         UserID.delegate = self
         Password.delegate = self
@@ -119,7 +132,6 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
         Password.clearButtonMode = .always
         Email.clearButtonMode = .always
         rePassword.clearButtonMode = .always
-        
         
         view.addSubview(UserID)
         view.addSubview(UserIDLabel)
@@ -137,18 +149,18 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
         //Auto Layout
         RegisterLabel.translatesAutoresizingMaskIntoConstraints = false
         RegisterLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: view32Height * 3).isActive = true
-        RegisterLabel.widthAnchor.constraint(equalToConstant: view22Width * 4).isActive = true
+        RegisterLabel.widthAnchor.constraint(equalToConstant: view22Width * 9).isActive = true
         RegisterLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        RegisterLabel.heightAnchor.constraint(equalToConstant: view32Height * 2).isActive = true
+        RegisterLabel.heightAnchor.constraint(equalToConstant: view32Height * 3).isActive = true
         
         LoginButton.translatesAutoresizingMaskIntoConstraints = false
-        LoginButton.topAnchor.constraint(equalTo: RegisterLabel.topAnchor).isActive = true
-        LoginButton.leadingAnchor.constraint(equalTo: RegisterLabel.trailingAnchor ,constant: view22Width * 4).isActive = true
-        LoginButton.widthAnchor.constraint(equalToConstant: view22Width * 4).isActive = true
-        LoginButton.heightAnchor.constraint(equalTo: RegisterLabel.heightAnchor).isActive = true
+        LoginButton.topAnchor.constraint(equalTo: RegisterLabel.topAnchor,constant: view32Height * 1.5).isActive = true
+        LoginButton.leadingAnchor.constraint(equalTo: RegisterLabel.trailingAnchor ,constant: view22Width * 2).isActive = true
+        LoginButton.widthAnchor.constraint(equalToConstant: view22Width * 3).isActive = true
+        LoginButton.heightAnchor.constraint(equalToConstant: view32Height * 1.5).isActive = true
         
         EmailLabel.translatesAutoresizingMaskIntoConstraints = false
-        EmailLabel.topAnchor.constraint(equalTo: RegisterLabel.bottomAnchor, constant: view32Height * 2).isActive = true
+        EmailLabel.topAnchor.constraint(equalTo: RegisterLabel.bottomAnchor, constant: view32Height * 3).isActive = true
         EmailLabel.widthAnchor.constraint(equalToConstant: view22Width * 4).isActive = true
         EmailLabel.leadingAnchor.constraint(equalTo: Email.leadingAnchor).isActive = true
         EmailLabel.heightAnchor.constraint(equalToConstant: view32Height * 1.5).isActive = true
@@ -197,66 +209,56 @@ class RegisterViewController: UIViewController , UITextFieldDelegate{
         
         RegisterButton.translatesAutoresizingMaskIntoConstraints = false
         RegisterButton.topAnchor.constraint(equalTo: rePassword.bottomAnchor, constant: view32Height * 2).isActive = true
-        RegisterButton.widthAnchor.constraint(equalToConstant: view22Width * 4).isActive = true
+        RegisterButton.widthAnchor.constraint(equalToConstant: view22Width * 9).isActive = true
         RegisterButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        RegisterButton.heightAnchor.constraint(equalToConstant: view32Height * 2.5).isActive = true
-        
-        
+        RegisterButton.heightAnchor.constraint(equalToConstant: view32Height * 2).isActive = true
         
     }
     
+    //ログイン画面に戻る
     @objc internal func Login(_ sender: UIButton){
-        let vc = LoginViewController()
-        navigationController?.pushViewController(vc, animated: true)
+        navigationController?.popViewController(animated: true)
     }
     
+    //登録完了
     @objc internal func Register(_ sender: UIButton){
         
-        
-        
         if(UserID.text == "" || Password.text == "" || rePassword.text == "" || Email.text == ""){
-            //アラートメッセージ
             displayMyAlertMessage(userMessage: "全てのフォームに入力してください。")
             return
         }
         
-        //パスワード一致確認
-        if(Password.text != rePassword.text)
-        {
+        if(Password.text != rePassword.text){
             displayMyAlertMessage(userMessage: "パスワードが一致していません。")
             return
         }
         
+        //各データを代入,画像はデフォルトのやつを挿入
         user.Email = Email.text
         user.UserID = UserID.text
         user.Password = Password.text
+        user.UserImage = UIImage(named: "NoImage")?.pngData() as NSData?
         users.insert(user, at: 0)
         
+        //デシリアライズ
         let data: Data = NSKeyedArchiver.archivedData(withRootObject: users)
         let userDefaults = UserDefaults.standard
         userDefaults.set(data, forKey: "users")
         userDefaults.synchronize()
         
-        
-        let vc = HomeViewController()
-        vc.user = user
-        navigationController?.pushViewController(vc, animated: true)
+        NowUser.shared.nowuser = user
+        dismiss(animated: true)
     }
     
+    //アラートメッセージ
     func displayMyAlertMessage(userMessage: String){
-        
-        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil)
+        let myAlert = UIAlertController(title:"Alert", message: userMessage, preferredStyle:  UIAlertController.Style.alert)
+        let okAction = UIAlertAction(title:"OK", style: UIAlertAction.Style.default, handler:nil)
         myAlert.addAction(okAction);
         self.present(myAlert,animated:true, completion:nil)
-        
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
-    
-    
-    
 }

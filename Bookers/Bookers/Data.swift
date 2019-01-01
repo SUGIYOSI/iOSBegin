@@ -1,17 +1,9 @@
-//
-//  Data.swift
-//  Bookers
-//
-//  Created by 杉山佳史 on 2018/09/19.
-//  Copyright © 2018年 SUGIYOSI. All rights reserved.
-//
-
 import Foundation
 
+//本のデータを格納するクラス
 
 class BookData: NSObject, NSCoding {
     
-    //タイトル、作者、本の画像、本のレビューの格納
     var BookTitle: String?
     var Author: String?
     var BookViews:[String:String] = [:]
@@ -25,8 +17,8 @@ class BookData: NSObject, NSCoding {
         BookTitle = aDecoder.decodeObject(forKey: "booktitle") as? String
         Author = aDecoder.decodeObject(forKey: "author") as? String
         BookImage = aDecoder.decodeObject(forKey: "bookimage") as? NSData
-        guard let low = aDecoder.decodeObject(forKey: "bookview") as? [String: String] else { return }
-        BookViews = low
+        guard let notNilBookViews = aDecoder.decodeObject(forKey: "bookview") as? [String: String] else { return }
+        BookViews = notNilBookViews
     }
     
     //エンコード処理
@@ -38,7 +30,7 @@ class BookData: NSObject, NSCoding {
     }
 }
 
-
+//Userデータを格納するクラス
 
 class User: NSObject, NSCoding {
     
@@ -68,4 +60,11 @@ class User: NSObject, NSCoding {
     }
 }
 
+//現在のユーザーデータと指定している本のデータを格納するシングルトン
 
+final class NowUser{
+    static let shared = NowUser()
+    var nowuser = User()
+    var nowbook = BookData()
+    private init() {}
+}

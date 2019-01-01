@@ -1,288 +1,205 @@
-//
-//  SearchViewController.swift
-//  Bookers
-//
-//  Created by 杉山佳史 on 2018/09/19.
-//  Copyright © 2018年 SUGIYOSI. All rights reserved.
-//
-
 import UIKit
 
-class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource  {
+class SearchViewController: UIViewController,UISearchControllerDelegate, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource ,UISearchResultsUpdating {
     
-    //BookData型の配列
     var Bookers = [BookData]()
-    //BookData型のオブジェクト
-    var Booka = BookData()
-    var user  = User()
-    //SearchBarインスタンス
-    private var searchbar: UISearchBar!
-    //テーブルビューインスタンス
-    private var tableview: UITableView!
-    
-    //検索結果が入る配列
+    var Book = BookData()
     var searchResult: Array = Array<String>()
     var myItems     : Array = Array<String>()
+    var tableView: UITableView!
+    var searchController: UISearchController!
     
+    //Search（検索）する時、これの他に効率のいいアルゴリズムを考えられませんでした。
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        //シリアライズ処理（Bookers）
+     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        resetValue()
         let userDefaults = UserDefaults.standard
         if let storedBookers = userDefaults.object(forKey: "Bookers") as? Data {
             if let unarchiveBookers = NSKeyedUnarchiver.unarchiveObject(with: storedBookers) as? [BookData] {
                 Bookers.append(contentsOf: unarchiveBookers)
             }
         }
-        
-        //UINavigationControllerでできたナビゲーションバーを非表示にする
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        
-        
-        
         //Bookersの各BookTitleをsearchResultに格納する
         for book in Bookers {
             if let title = book.BookTitle {
                 searchResult.append(title)
             }
         }
-        
-        //myItemsにsearchResltに代入する
         myItems = searchResult
-        
-        //Viewの大きさを取得
-        let viewWidth = self.view.frame.size.width
+        tableView.reloadData()
+    }
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         let viewHeight = self.view.frame.size.height
         
+        //NavigationBarとsearchBar
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        //searchBarはsearchControllerからアクセスできることを示している一文
+        searchController.searchBar.barTintColor = UIColor(white: 0.9, alpha: 1)
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+    
+        self.navigationItem.title = "本検索"
+        self.navigationController?.navigationBar.barTintColor = UIColor(red: 173/255, green: 247/255, blue: 181/255, alpha: 1)
         
+        //TableView
+        tableView = UITableView()
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(SearchCustomCell.self, forCellReuseIdentifier: "SearchCustomCell")
+        tableView.rowHeight = viewHeight / 9
+        self.view.addSubview(tableView)
         
-        // NavigationBar関連について書く
-        
-        //UINavigationBarを作成
-        let NavBar = UINavigationBar()
-        //大きさの指定
-        NavBar.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height, width: viewWidth, height: 44)
-        //NavigationBarItemの宣言
-        let NavItems = UINavigationItem()
-        //タイトルの作成
-        NavItems.title = "本検索"
-        
-        //右上にある検索ボタンの設定する
-        let rightNavBtn =  UIBarButtonItem(barButtonSystemItem:  .search, target: self, action: #selector(rightBarBtnClicked(sender:)))
-        NavItems.leftBarButtonItem = rightNavBtn
-        rightNavBtn.action = #selector(rightBarBtnClicked(sender:))
-        NavItems.rightBarButtonItem = rightNavBtn;
-        NavBar.pushItem(NavItems, animated: true)
-        //ナビゲーションバーをviewに追加
-        self.view.addSubview(NavBar)
-        
-        //左上にある追加ボタンの設定をする
-        let leftNavBtn =  UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(leftBarBtnClicked(sender:)))
-        leftNavBtn.action = #selector(leftBarBtnClicked(sender:))
-        NavItems.leftBarButtonItem = leftNavBtn;
-        NavBar.pushItem(NavItems, animated: true)
-        //ナビゲーションバーをviewに追加
-        self.view.addSubview(NavBar)
-        
-        
-        // SearchBar関連について書く
-        
-        //SearchBarの作成
-        searchbar = UISearchBar()
-        //デリゲートを設定
-        searchbar.delegate = self
-        //大きさの指定
-        searchbar.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height, width: viewWidth, height: 44)
-        //キャンセルボタンの追加
-        searchbar.showsCancelButton = true
-        
-        
-        //TableView関連について書く
-        
-        //テーブルビューの初期化
-        tableview = UITableView()
-        //デリゲートの設定
-        tableview.delegate = self
-        tableview.dataSource = self
-        //テーブルビューの大きさの指定
-        tableview.frame = CGRect(x: 0, y: UIApplication.shared.statusBarFrame.height + NavBar.frame.height, width: viewWidth, height: viewHeight - UIApplication.shared.statusBarFrame.height-NavBar.frame.height)
-        //先ほど作成したSearchBarを作成
-        tableview.tableHeaderView = searchbar
-        //サーチバーの高さだけ初期位置を下げる
-        tableview.contentOffset = CGPoint(x: 0,y :44)
-        
-        //テーブルビューの設置
-        tableview.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(tableview)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.topAnchor,constant: UIApplication.shared.statusBarFrame.height + (navigationController?.navigationBar.frame.height)!).isActive = true
+        tableView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        tableView.heightAnchor.constraint(equalToConstant: viewHeight - UIApplication.shared.statusBarFrame.height - (navigationController?.navigationBar.frame.height)!).isActive = true
     }
     
-    
-    
-    
-    //MARK: - ナビゲーションバーの右の虫眼鏡が押されたら呼ばれるメソッド
-    @objc internal func rightBarBtnClicked(sender: UIButton){
-        tableview.contentOffset = CGPoint(x: 0,y :0)
-    }
-    
-    
-    
-    //MARK: - ナビゲーションバーの左の追加ボタンが押されたら呼ばれるメソッド
-    @objc internal func leftBarBtnClicked(sender: UIButton){
-        let alertController = UIAlertController(title: "追加", message: "本の名前を追加して下さい", preferredStyle: UIAlertControllerStyle.alert)
-        //テキストエリア(本のタイトル)を追加
-        alertController.addTextField(configurationHandler: nil)
-        
-        //okボタンが押された場合
-        let okAction = UIAlertAction(title: "ok", style: UIAlertActionStyle.default){ (action: UIAlertAction) in
-            if let textField = alertController.textFields?.first {
-                
-                let booker = BookData()
-                booker.BookTitle = textField.text!
-                
-                //配列の先頭に入力値を挿入、searchresult,myItemにも挿入
-                self.Bookers.insert(booker, at: 0)
-                self.myItems.insert(textField.text!, at: 0)
-                self.searchResult = self.myItems
-                
-                //デシリアライズ 処理（Bookers）
-                let data: Data = NSKeyedArchiver.archivedData(withRootObject: self.Bookers)
-                let userDefaults = UserDefaults.standard
-                userDefaults.set(data, forKey: "Bookers")
-                userDefaults.synchronize()
-                
-                //行が追加された事をテーブルに通知　これを行う事で　UITableViewの再描画処理が行われ、実際の画面に新しい項目が追加されることになります
-                self.tableview.insertRows(at: [IndexPath(row: 0,section: 0)], with: UITableViewRowAnimation.right)
-                
-                
-                
-            }
-        }
-        
-        alertController.addAction(okAction)
-        let cancelButton = UIAlertAction(title: "cancel", style: UIAlertActionStyle.cancel, handler: nil)
-        //キャンセルボタンを追加
-        alertController.addAction(cancelButton)
-        //アラートダイアログを表示
-        present(alertController, animated: true, completion: nil)
-        
-    }
-    
-    
-    
-    //MARK: - 渡された文字列を含む要素を検索し、テーブルビューを再表示する
-    func searchItems(searchText: String){
-        
-        //要素を検索する
-        if searchText != "" {
-            searchResult = myItems.filter { myItem in
-                return (myItem ).contains(searchText)
-                } as Array
-            
-        }else{
-            //渡された文字列が空の場合は全てを表示
+    func updateSearchResults(for searchController: UISearchController) {
+        // SearchBarに入力したテキストを使って表示データをフィルタリングする。
+        let text = searchController.searchBar.text ?? ""
+        if text.isEmpty {
             searchResult = myItems
+        } else {
+            searchResult = myItems.filter { $0.contains(text) }
         }
-        
-        //tableViewを再読み込みする
-        tableview.reloadData()
+        tableView.reloadData()
     }
     
-    
-    
-    //SearchBarのデリゲードメソッドたち
-    
-    //MARK: 検索しているとき、テキストが変更される毎に呼ばれる
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        //検索する
-        searchItems(searchText: searchText)
-    }
-    
-    //MARK: 検索バーのキャンセルボタンが押されると呼ばれる
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        
-        searchbar.text = ""
-        self.view.endEditing(true)
-        searchResult = myItems
-        
-        //tableViewを再読み込みする
-        tableview.reloadData()
-    }
-    
-    //MARK: 検索バーのSearchボタンが押されると呼ばれる
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-        self.view.endEditing(true)
-        //検索する
-        searchItems(searchText: searchbar.text! as String)
-    }
-    
-    
-    //テーブルビューのデリゲードメソッドたち
-    
-    //MARK: テーブルビューのセルの数を設定する
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //テーブルビューのセルの数はSearchResult配列の数とした
-        return self.searchResult.count
+        return searchResult.count
     }
     
-    //MARK: テーブルビューのセルの中身を設定する
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //SearchResult配列の中身をテキストにして登録した
-        let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "cell")! as UITableViewCell
-        //let cell = UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: "cell")
-        
-        cell.textLabel?.text = self.searchResult[indexPath.row]
-        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SearchCustomCell",for: indexPath as IndexPath) as! SearchCustomCell
+        cell.setCell(indexPath: indexPath.row, Bookers: Bookers, searchResult: searchResult)
         return cell
     }
     
-    //MARK: テーブルビューのセルを削除する処理
-    func tableView(_ tableview: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath){
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //Bookersの各BookTitleを参照し,searchResult[indexPath.row]から該当するBookを持ってくる。
+        for book in Bookers {
+            if let title = book.BookTitle {
+                if title == searchResult[indexPath.row] {
+                    Book = book
+                }
+            }
+        }
+        let vc = BookViewController()
+        NowUser.shared.nowbook = Book
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    
+    func tableView(_ tableview: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath){
         //削除可能かどうか
-        if editingStyle == UITableViewCellEditingStyle.delete {
-            //Bookersの各BookTitleを参照し、削除するセルと同じ名前のObjectを削除する（あまり良く無いのかも）
+        if editingStyle == UITableViewCell.EditingStyle.delete {
+            //Bookersの各BookTitleを参照し、searchResult[indexPath.row]から該当するBookを削除する。
             for book in Bookers {
                 if let title = book.BookTitle {
                     if title == searchResult[indexPath.row] {
-                        let index: Int = Bookers.index(of: book)!
-                        Bookers.remove(at: index)
+                        if let BookersIndex = Bookers.index(of: book) {
+                            let index: Int = BookersIndex
+                            Bookers.remove(at: index)
+                        }
                     }
                 }
             }
             //searchResultも削除
             searchResult.remove(at: indexPath.row)
             //セルを削除
-            tableview.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
-            
-            
+            tableview.deleteRows(at: [indexPath], with: UITableView.RowAnimation.fade)
             //デシリアライズ処理（Bookers）
             let data: Data = NSKeyedArchiver.archivedData(withRootObject: Bookers)
             let userDefaults = UserDefaults.standard
             userDefaults.set(data, forKey: "Bookers")
             userDefaults.synchronize()
+            tableview.reloadData()
         }
     }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
     
+    //全ての値を初期化する
+    func resetValue(){
+        myItems.removeAll()
+        searchResult.removeAll()
+        Bookers.removeAll()
+        Book = BookData()
+    }
+}
+
+
+class SearchCustomCell: UITableViewCell {
     
+    let bookimage: UIImageView = {
+        let image = UIImageView()
+        image.backgroundColor = .gray
+        image.layer.cornerRadius = 15
+        image.layer.masksToBounds = true
+        return image
+    }()
     
-    //Mark: テーブルビューのセルが押されたら呼ばれる
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let titleLabel: UILabel = {
+        let Label = UILabel()
+        Label.font = UIFont.italicSystemFont(ofSize: 17)
+        Label.adjustsFontSizeToFitWidth = true
+        Label.textAlignment = .center
+        Label.layer.cornerRadius = 0
+        Label.layer.masksToBounds = true
+        return Label
+    }()
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // 引数のないコンストラクタみたいなもの。
+    // インスタンスが生成されたときに動く関数
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        ////Bookersの各BookTitleを参照し,searchResult[indexPath.row]と同じ物のObjectを持ってくる。
+        let viewHeight10 = self.contentView.frame.height / 10
+        let viewWidth22 = self.contentView.frame.width / 22
+    
+        self.contentView.addSubview(bookimage)
+        self.contentView.addSubview(titleLabel)
+        
+        bookimage.translatesAutoresizingMaskIntoConstraints = false
+        bookimage.topAnchor.constraint(equalTo:contentView.topAnchor, constant: viewHeight10 * 2).isActive = true
+        bookimage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: viewWidth22 * 2).isActive = true
+        bookimage.widthAnchor.constraint(equalToConstant: viewWidth22 * 8).isActive = true
+        bookimage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -viewHeight10 * 2).isActive = true
+        
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.topAnchor.constraint(equalTo:bookimage.topAnchor, constant: viewHeight10 * 4).isActive = true
+        titleLabel.leadingAnchor.constraint(equalTo: bookimage.trailingAnchor,constant: viewWidth22 * 3.5).isActive = true
+        titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -viewWidth22 * 3.5).isActive = true
+        titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,constant: -viewHeight10 * 4).isActive = true
+        
+    }
+    
+    func setCell(indexPath: Int, Bookers: [BookData], searchResult: [String]){
+        //各本の画像を持ってくる
         for book in Bookers {
-            if let title = book.BookTitle {
-                if title == searchResult[indexPath.row] {
-                    Booka = book
+            if searchResult[indexPath] == book.BookTitle{
+                if let image = book.BookImage {
+                    bookimage.image = UIImage(data: image as Data)?.resize(size: CGSize(width: 50, height: 50))
                 }
             }
         }
-        
-        //上の処理で持ってきた、BookData型のBookaを次の画面へ持っていく
-        let vc = BookViewController()
-        vc.Books = Booka
-        vc.user = user
-        navigationController?.pushViewController(vc, animated: true)
-        
+        titleLabel.text = searchResult[indexPath]
     }
+    
 }
